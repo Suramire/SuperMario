@@ -33,12 +33,11 @@ import static com.suramire.androidgame25.Site.左中;
 
 
 public class MyView2 extends SurfaceView implements Callback, Runnable {
-    private static final long DOUBLE_TAP_TIMEOUT = 200;
     //region 字段区
     private SurfaceHolder holder;
     private boolean isRunning;
     private Canvas lockCanvas;
-    private boolean isGameOver;
+    private boolean isCounterShown;
     private Point outSize;
     private float scaleX;
     private float scaleY;
@@ -62,11 +61,15 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 	private boolean isEnemyShown3;
     private Integer score;//用于分数显示
     private Paint mPaint;
-    private boolean isLifeNumber;//显示生命数
     private Bitmap marioBitmap;
     private int lifeNumber = 4;
-    private boolean isInitDone;
-    private boolean isGameOver2;
+    private boolean isInited;
+    private boolean isGameOver;
+    private List<Coin> coins;
+    private String scoreString;
+    private int delay;
+    private boolean logoDisplayed;
+    private Bitmap logoBitmap;
 
     //endregion
     //region 通用方法
@@ -107,11 +110,15 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(isGameOver2){
+        if(!logoDisplayed){
+            logoDisplayed =true;
+        }
+
+        if(isGameOver){
             lifeNumber = 3;
             init();
         }else{
-            if(isGameOver){
+            if(isCounterShown){
                 init();
             }
         }
@@ -184,20 +191,46 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
     private void myLogic() {
 
-        if(!isGameOver && isInitDone){
+        if(!isCounterShown && isInited &&logoDisplayed){
             mario.logic();
             if(enemies!=null){
                 for (int i = 0; i < enemies.size(); i++) {
                     enemies.get(i).logic();
                 }
             }
+            if(coins!=null){
+                for (int i = 0; i < coins.size(); i++) {
+                    coins.get(i).logic();
+                }
+            }
             marioMove();
             myStep();
             collisionWithMap();
             collisionWithEnemy();
+            collisionWithCoin();
         }
 
 
+    }
+
+    /**
+     * 处理玛丽吃金币操作
+     */
+    private void collisionWithCoin() {
+        if(!mario.isDead()){
+            if(coins!=null){
+                for(int i=0;i<coins.size();i++){
+                    Coin coin = coins.get(i);
+                    //玛丽吃到可视状态的金币
+                    if(coin.isVisiable()&& mario.collisionWith(coin)){
+                        coin.setVisiable(false);
+                        score +=100;
+                        scoreString = "100";
+                    }
+                }
+
+            }
+        }
     }
 
     private void collisionWithEnemy() {
@@ -210,6 +243,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                             enemy.setDead(true);
                             //杀死敌人时获得100积分
                             score +=100;
+                            scoreString = "100";
                             speedY = -10;
                         }else{
                             mario.setDead(true);
@@ -285,6 +319,11 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     		enemies.get(i).move(-4, 0);
             			}
                     }
+                    if(coins!=null){
+                        for (int i = 0; i < coins.size(); i++) {
+                            coins.get(i).move(-4,0);
+                        }
+                    }
                 }else{
                 	mario.move(4, 0);
                 }
@@ -299,11 +338,11 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     			 mario.setDead(true);
     			 speedY = -16;
     		 }else{
-                 isGameOver = true;
-                 isLifeNumber = true;
+                 isCounterShown = true;
+
                  lifeNumber--;
                  if(lifeNumber==0){
-                     isGameOver2 = true;
+                     isGameOver = true;
                  }
     		 }
          }
@@ -312,10 +351,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     }
     //endregion
     private void init() {
-        isInitDone = false;
+        isInited = false;
+        isCounterShown = false;
         isGameOver = false;
-        isGameOver2 = false;
-        isLifeNumber = true;
+
         aBitmap = getBitmap("button/a.png");
         bBitmap = getBitmap("button/b.png");
         downBitmap = getBitmap("button/down.png");
@@ -323,6 +362,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         rightBitmap = getBitmap("button/right.png");
         gameoverbitmap = getBitmap("menu/gameover.png");
         marioBitmap = getBitmap("mario/mario0.png");
+        logoBitmap = getBitmap("logo/logo.jpg");
         List<Bitmap> bitmaps = new ArrayList<Bitmap>();
         for (int i = 0; i < 4; i++) {
             bitmaps.add(getBitmap("mario/mario"+i+".png"));
@@ -332,6 +372,23 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             bitmaps2.add(getBitmap("enemy/enemy"+i+".png"));
         }
         enemies = new ArrayList<Enemy>();
+        List<Bitmap> coinBitmaps = new ArrayList<Bitmap>();
+        for (int i = 0; i < 4; i++) {
+            coinBitmaps.add(getBitmap(String.format(Locale.CHINA,
+                    "coin/object_coin_%02d.png",i)));
+        }
+        coins = new ArrayList<Coin>();
+
+        for (int i = 0; i < 6; i++) {
+            Coin coin = new Coin(32, 32, coinBitmaps);
+            if(i<3){
+                coin.setPosition(87+i*50,208);
+            }else{
+                coin.setPosition(454+i*50,208);
+            }
+            coin.setVisiable(true);
+            coins.add(coin);
+        }
         rectF = new RectF();
         mario = new Mario(32, 62, bitmaps);
         mario.setVisiable(true);
@@ -574,6 +631,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 						0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						0, 0, 0, 0, 0, 0, 0, 0 }, };
+
+
         //endregion
 		
 		Bitmap mapBitmap = getBitmap("map/map1.png");
@@ -583,7 +642,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 		tiledLayer_zhebi01.setTiledCell(map_zhebi01);
 		tiledLayer_back01 = new TiledLayer(mapBitmap, 100, 12, 40, 40);
 		tiledLayer_back01.setTiledCell(map_back01);
-        isInitDone = true;
+        isInited = true;
+
 
     }
     private void myDraw() {
@@ -594,43 +654,59 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             lockCanvas.drawColor(Color.BLACK);
             mPaint.setTextSize(20);
             mPaint.setColor(Color.WHITE);
-            //游戏彻底结束
-            if(isGameOver2){
-                lockCanvas.drawBitmap(gameoverbitmap,
-                400-gameoverbitmap.getWidth()/2,
-                240-gameoverbitmap.getHeight()/2,null);
+            if(!logoDisplayed){
+                lockCanvas.drawBitmap(logoBitmap,0,0,null);
             }else{
-                //开始显示剩余生命数
+                //游戏彻底结束
                 if(isGameOver){
-                    lockCanvas.drawBitmap(marioBitmap,400-marioBitmap.getWidth(),
-                            240-marioBitmap.getHeight(),null);
-                    lockCanvas.drawText(String.format(Locale.CHINA,"X %02d",lifeNumber),
-                            440-marioBitmap.getWidth(),
-                            280-marioBitmap.getHeight(),mPaint);
-
+                    lockCanvas.drawBitmap(gameoverbitmap,
+                            400-gameoverbitmap.getWidth()/2,
+                            240-gameoverbitmap.getHeight()/2,null);
                 }else{
-                    tiledLayer_back01.draw(lockCanvas);
-                    tiledLayer_peng01.draw(lockCanvas);
-                    if(enemies!=null){
-                        for (int i = 0; i < enemies.size(); i++) {
-                            enemies.get(i).draw(lockCanvas);
+                    //开始显示剩余生命数
+                    if(isCounterShown){
+                        lockCanvas.drawBitmap(marioBitmap,400-marioBitmap.getWidth(),
+                                240-marioBitmap.getHeight(),null);
+                        lockCanvas.drawText(String.format(Locale.CHINA,"X %02d",lifeNumber),
+                                440-marioBitmap.getWidth(),
+                                280-marioBitmap.getHeight(),mPaint);
+
+                    }else{
+                        tiledLayer_back01.draw(lockCanvas);
+                        tiledLayer_peng01.draw(lockCanvas);
+
+                        if(enemies!=null){
+                            for (int i = 0; i < enemies.size(); i++) {
+                                enemies.get(i).draw(lockCanvas);
+                            }
+                        }
+
+                        mario.draw(lockCanvas);
+                        if(scoreString!=null){
+                            lockCanvas.drawText(scoreString,mario.getX()+30,mario.getY()-20-3*delay,mPaint);
+                            if(delay++==7){
+                                scoreString=null;
+                                delay=0;
+                            }
+
+                        }
+                        tiledLayer_zhebi01.draw(lockCanvas);
+                        lockCanvas.drawBitmap(aBitmap, 680, 420, null);
+                        lockCanvas.drawBitmap(bBitmap, 740, 360, null);
+                        lockCanvas.drawBitmap(downBitmap, 60, 420, null);
+                        lockCanvas.drawBitmap(leftBitmap, 0, 360, null);
+                        lockCanvas.drawBitmap(rightBitmap, 120, 360, null);
+                        //绘制分数
+
+                        lockCanvas.drawText(String.format(Locale.CHINA,"%06d",score),20,20,mPaint);
+                        if(coins!=null){
+                            for (int i = 0; i < coins.size(); i++) {
+                                coins.get(i).draw(lockCanvas);
+                            }
                         }
                     }
-                    mario.draw(lockCanvas);
-                    tiledLayer_zhebi01.draw(lockCanvas);
-                    lockCanvas.drawBitmap(aBitmap, 680, 420, null);
-                    lockCanvas.drawBitmap(bBitmap, 740, 360, null);
-                    lockCanvas.drawBitmap(downBitmap, 60, 420, null);
-                    lockCanvas.drawBitmap(leftBitmap, 0, 360, null);
-                    lockCanvas.drawBitmap(rightBitmap, 120, 360, null);
-                    //绘制分数
-
-                    lockCanvas.drawText(String.format(Locale.CHINA,"%06d",score),20,20,mPaint);
                 }
             }
-
-
-
 
             lockCanvas.restore();
         } catch (Exception e) {e.printStackTrace();}
@@ -643,6 +719,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private  void collisionWithMap(){
         //玛丽碰撞
     	if(!mario.isDead()){
+
     		//头顶碰撞
             if(mario.siteCollisionWith(tiledLayer_peng01, 上左)||
                     mario.siteCollisionWith(tiledLayer_peng01, 上左)||
