@@ -2,6 +2,7 @@ package com.suramire.androidgame25;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+
 import java.util.List;
 
 /**
@@ -177,4 +178,71 @@ public class Mario extends Sprite {
         }
         return false;
     }
+
+
+
+    public boolean siteCollisionWith(Sprite sprite,Site site){
+        int sy = sprite.getY();
+        int sx = sprite.getX();
+        int sh = sprite.getHeight();
+        int sw = sprite.getWidth();
+        int w = getWidth();
+        int h = getHeight();
+        int x = getX();
+        int y = getY();
+
+        switch (site){
+            case 下中:{
+
+                if(collisionWith(sprite)
+                        && sy > y
+                        && h >=sy-y
+                        && x+w/4>=sx
+                        && x+w/4 <=sx+sw
+                        ){
+//                    Log.e("MyView2", "y:" + y+" h:"+h + " sy:"+sy +" sh:"+sh +" x:"+x+" sx:"+sx +" w:"+w+ " sw:"+sw);
+                    return true;
+                }
+            }break;
+            case 上中:{
+
+                if(collisionWith(sprite)
+                        && sy + sh >= y //砖块高于玛丽最多一行高度
+                        && x + w /4>= sx//玛丽右3/4宽度可以顶砖块
+                        && x + w /4<= sx + sw//玛丽左3/4宽度可以顶砖块
+                        ){
+//                    Log.e("MyView2", "y:" + y+" h:"+h + " sy:"+sy +" sh:"+sh +" x:"+x+" sx:"+sx +" w:"+w+ " sw:"+sw);
+                    return true;
+                }
+            }break;
+
+
+//
+
+            case 右中:{
+                if(collisionWith(sprite)
+                        &&x+w==sx
+                        &&sy - y <h//只和同一行砖块左右碰撞
+                        ){
+                    return true;
+                }
+            }break;
+            case 左中:{
+                if(collisionWith(sprite)
+                        &&sx+sw==x
+//                        &&y-sy<sh
+                        &&sy - y <h//只和同一行砖块左右碰撞
+                        ){
+                    return true;
+                }
+            }break;
+//
+
+
+        }
+
+        return false;
+    }
+
+
 }

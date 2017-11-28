@@ -181,15 +181,19 @@ public class Sprite {
             return false;
         }
         if(getX()<sprite.getX()&& getX()+getWidth()<sprite.getX()){
+//            精灵在右
     		return false;
     	}
     	if(sprite.getX()<getX()&& sprite.getX()+sprite.getWidth()<getX()){
+//            精灵在左
     		return false;
     	}
     	if(getY()<sprite.getY()&& getY()+getHeight()<sprite.getY()){
+//            精灵在下
     		return false;
     	}
     	if(sprite.getY()<getY()&& sprite.getY()+sprite.getHeight()<getY()){
+//            精灵在上
     		return false;
     	}
     	return true;
