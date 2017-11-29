@@ -1,38 +1,23 @@
 package com.suramire.androidgame25;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 
-import java.util.List;
+import com.suramire.androidgame25.util.L;
 
 /**
- * Created by Suramire on 2017/11/9.
+ * Created by Suramire on 2017/11/29.
  */
 
-public class Mario extends Sprite {
+public class Mushroom extends Sprite {
+    private boolean isJumping;
+    private int speedY;
 
-    //region Fields
-    private boolean isMirror;//是否翻转
-    private boolean isRunning;//是否跑动
-    private boolean isJumping;//是否跳跃
-    private boolean isDead;//是否死亡
-    //endregion
-
-    //region Getter & Setter
-    public boolean isMirror() {
-        return isMirror;
+    public int getSpeedY() {
+        return speedY;
     }
 
-    public void setMirror(boolean mirror) {
-        isMirror = mirror;
-    }
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    public void setRunning(boolean running) {
-        isRunning = running;
+    public void setSpeedY(int speedY) {
+        this.speedY = speedY;
     }
 
     public boolean isJumping() {
@@ -43,62 +28,53 @@ public class Mario extends Sprite {
         isJumping = jumping;
     }
 
-    public boolean isDead() {
-        return isDead;
+    public Site getDirection() {
+        return direction;
     }
 
-    public void setDead(boolean dead) {
-        isDead = dead;
+    public void setDirection(Site direction) {
+        this.direction = direction;
     }
-    //endregion
 
-    public Mario(int width, int height, List<Bitmap> bitmaps) {
-        super(width, height, bitmaps);
+    //道具移动的方向
+    private Site direction;
+
+    public Mushroom(Bitmap bitmap) {
+        super(bitmap);
     }
+
 
     @Override
     public void logic() {
-        if(isDead()){
-            setmFrameSequenceIndex(3);
-        }else if(isJumping()){
-            setmFrameSequenceIndex(2);
-        }else if(isRunning()){
-            nextFrame();
-            //循环跑动贴图
-            if(getmFrameSequenceIndex()>=2){
-                setmFrameSequenceIndex(0);
-            }
-        }else{
-            setmFrameSequenceIndex(0);
-        }
-    }
+        if(isVisiable()){
+            switch (direction){
+                //道具不动
+                case 上中:{
 
-    @Override
-    public void draw(Canvas canvas) {
-        if(isMirror()){
-            canvas.save();
-            //翻转画布 相当于翻转人物
-            canvas.scale(-1,1,getX()+getWidth()/2,getY()+getHeight()/2);
-            super.draw(canvas);
-            canvas.restore();
-        }else{
-            super.draw(canvas);
+                }break;
+                //道具往左移动
+                case 上左:{
+                    move(-2,0);
+                }break;
+                //道具往右移动
+                case 上右:{
+                    move(2,0);
+                }break;
+            }
+            if(isJumping()){
+                move(0,speedY++);
+            }
         }
     }
 
     @Override
     protected void outOfBounds() {
-        if(getX()<0){
-            setX(0);
-        }else if(getX()>800-getHeight()){
-            setX(800-getHeight());
-        }
-        if(getY()<0){
-            setY(0);
-        }else if(getY()>480-getHeight()){
-            setY(480-getHeight());
+        //在超出左边界 以及掉入坑里的是否表示为不可见
+        if(getX()<-getWidth() || getY()>400){
+            setVisiable(false);
         }
     }
+
 
     /**
      * 碰撞检测
@@ -168,24 +144,20 @@ public class Mario extends Sprite {
         //在地图上的对应行列
         int col = mapX / tiledLayer.getWidth();
         int row = mapY / tiledLayer.getHeight();
+//        L.e("col:"+col+" row:"+row);
         //超出边界
         if(col>tiledLayer.getCols()-1|| row>tiledLayer.getRows()-1){
             return true;
         }
         //存在障碍物
-        if(tiledLayer.getTiledCell(col,row)!=0){
-            return true;
+        if(col>=0&&row>=0){
+            if(tiledLayer.getTiledCell(col,row)!=0){
+                return true;
+            }
         }
+
         return false;
     }
-
-
-    /**
-     * 玛丽与精灵碰撞检测
-     * @param sprite 被碰撞的精灵
-     * @param site 碰撞方位
-     * @return 是否碰撞
-     */
 
     public boolean siteCollisionWith(Sprite sprite,Site site){
         int sy = sprite.getY();
@@ -222,6 +194,9 @@ public class Mario extends Sprite {
                 }
             }break;
 
+
+//
+
             case 右中:{
                 if(collisionWith(sprite)
                         &&x+w==sx
@@ -239,10 +214,10 @@ public class Mario extends Sprite {
                     return true;
                 }
             }break;
+//
+
         }
 
         return false;
     }
-
-
 }

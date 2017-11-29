@@ -16,6 +16,7 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
+import com.suramire.androidgame25.util.L;
 import com.suramire.androidgame25.util.SPUtils;
 
 import java.io.IOException;
@@ -23,7 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static com.suramire.androidgame25.Site.上右;
 import static com.suramire.androidgame25.Site.上左;
+import static com.suramire.androidgame25.Site.下中;
 import static com.suramire.androidgame25.Site.下左;
 import static com.suramire.androidgame25.Site.右上;
 import static com.suramire.androidgame25.Site.右下;
@@ -206,12 +209,32 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     coins.get(i).logic();
                 }
             }
+            if(bricks!=null){
+                for (int i = 0; i < bricks.size(); i++) {
+                    Brick brick = bricks.get(i);
+                    brick.logic();
+                    Mushroom mushroom = brick.getMushroom();
+                    if(mushroom!=null){
+                        if(mushroom.isVisiable()){
+                            mushroom.logic();
+                        }
+                    }
+
+
+                }
+            }
             marioMove();
             myStep();
+
             collisionWithMap();
+
+
+            MushroomCollisionWithBrick();
+
             collisionWithEnemy();
             collisionWithCoin();
             collisionWithBrick();
+
         }
         if(isShowCounter &&!isDiscountLife){
 
@@ -308,6 +331,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
      * 处理移动与跳跃的逻辑
      */
     private void marioMove() {
+
     	//1 死亡前先起跳
     	if(mario.isDead()){
     		mario.move(0, speedY++);
@@ -338,7 +362,13 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     }
                     if(bricks!=null){
                         for (int i = 0; i < bricks.size(); i++) {
-                            bricks.get(i).move(-4,0);
+                            Brick brick = bricks.get(i);
+                            brick.move(-4,0);
+                            Mushroom mushroom = brick.getMushroom();
+                            if(mushroom!=null && mushroom.isVisiable()){
+                                mushroom.move(-4,0);
+                            }
+
                         }
                     }
                 }else{
@@ -346,6 +376,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 }
             }
             if(mario.isJumping()){
+                L.e("mario.speedY:" + speedY);
                 mario.move(0,speedY++);
             }
     	}
@@ -361,85 +392,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
 
     }
-    //endregion
-    private void init() {
-        isInited = false;
-        isShowCounter = false;
-        isGameOver = false;
-        isDiscountLife = false;
-        aBitmap = getBitmap("button/a.png");
-        bBitmap = getBitmap("button/b.png");
-        downBitmap = getBitmap("button/down.png");
-        leftBitmap = getBitmap("button/left.png");
-        rightBitmap = getBitmap("button/right.png");
-        gameoverbitmap = getBitmap("menu/gameover.png");
-        marioBitmap = getBitmap("mario/mario0.png");
-        logoBitmap = getBitmap("logo/logo.jpg");
-        List<Bitmap> bitmaps = new ArrayList<Bitmap>();
-        for (int i = 0; i < 4; i++) {
-            bitmaps.add(getBitmap("mario/mario"+i+".png"));
-        }
-        bitmaps2 = new ArrayList<Bitmap>();
-        for (int i = 0; i < 3; i++) {
-            bitmaps2.add(getBitmap("enemy/enemy"+i+".png"));
-        }
-        enemies = new ArrayList<Enemy>();
-        List<Bitmap> coinBitmaps = new ArrayList<Bitmap>();
-        for (int i = 0; i < 4; i++) {
-            coinBitmaps.add(getBitmap(String.format(Locale.CHINA,
-                    "coin/object_coin_%02d.png",i)));
-        }
-        coins = new ArrayList<Coin>();
 
-        for (int i = 0; i < 6; i++) {
-            Coin coin = new Coin(32, 32, coinBitmaps);
-            if(i<3){
-                coin.setPosition(87+i*50,208);
-            }else{
-                coin.setPosition(454+i*50,208);
-            }
-            coin.setVisiable(true);
-            coins.add(coin);
-        }
-
-        List<Bitmap> brickBitmaps = new ArrayList<Bitmap>();
-        for (int i = 0; i < 5; i++) {
-            brickBitmaps.add(getBitmap(String.format(Locale.CHINA, "brick/brick%02d.png", i)));
-        }
-        //存放砖块行列坐标
-        int[][] brickpostions = {
-                {3,3},{2,6},{3,6},{4,6},{17,2},{19,2},
-                {16,5},{18,5},{20,5},{45,2},{36,5},
-                {43,5},{45,5},{47,5}
-
-        };
-        bricks = new ArrayList<Brick>();
-        for (int i = 0; i < brickpostions.length; i++) {
-            int[] brickpostion = brickpostions[i];
-            Brick brick = new Brick(40, 40, brickBitmaps);
-            brick.setPosition(40*brickpostion[0],40*brickpostion[1]);
-            brick.setVisiable(true);
-            bricks.add(brick);
-        }
-
-
-
-        rectF = new RectF();
-        mario = new Mario(32, 62, bitmaps);
-        mario.setVisiable(true);
-        mario.setPosition(0,300);
-
-        isEnemyShown1 = false;
-        isEnemyShown2 = false;
-        isEnemyShown3 = false;
-
-        mPaint = new Paint();
-        score = (Integer) SPUtils.get(context,"hiscore",0);
-
-        //region array
-        /************ 第一关***********碰撞层 *******/
-
-        int map_peng01[][] ={
+    private  int[][] getMapArray(){
+        int[][] ints = {
                 { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -525,6 +480,92 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30 }
         };
+        return ints;
+    }
+
+    //endregion
+    private void init() {
+        isInited = false;
+        isShowCounter = false;
+        isGameOver = false;
+        isDiscountLife = false;
+        aBitmap = getBitmap("button/a.png");
+        bBitmap = getBitmap("button/b.png");
+        downBitmap = getBitmap("button/down.png");
+        leftBitmap = getBitmap("button/left.png");
+        rightBitmap = getBitmap("button/right.png");
+        gameoverbitmap = getBitmap("menu/gameover.png");
+        marioBitmap = getBitmap("mario/mario0.png");
+        logoBitmap = getBitmap("logo/logo.jpg");
+        Bitmap mushroomBitmap = getBitmap("item/mushroom.png");
+        List<Bitmap> bitmaps = new ArrayList<Bitmap>();
+        for (int i = 0; i < 4; i++) {
+            bitmaps.add(getBitmap("mario/mario"+i+".png"));
+        }
+        bitmaps2 = new ArrayList<Bitmap>();
+        for (int i = 0; i < 3; i++) {
+            bitmaps2.add(getBitmap("enemy/enemy"+i+".png"));
+        }
+        enemies = new ArrayList<Enemy>();
+        List<Bitmap> coinBitmaps = new ArrayList<Bitmap>();
+        for (int i = 0; i < 4; i++) {
+            coinBitmaps.add(getBitmap(String.format(Locale.CHINA,
+                    "coin/object_coin_%02d.png",i)));
+        }
+        coins = new ArrayList<Coin>();
+
+        for (int i = 0; i < 6; i++) {
+            Coin coin = new Coin(32, 32, coinBitmaps);
+            if(i<3){
+                coin.setPosition(87+i*50,208);
+            }else{
+                coin.setPosition(454+i*50,208);
+            }
+            coin.setVisiable(true);
+            coins.add(coin);
+        }
+
+        List<Bitmap> brickBitmaps = new ArrayList<Bitmap>();
+        for (int i = 0; i < 5; i++) {
+            brickBitmaps.add(getBitmap(String.format(Locale.CHINA, "brick/brick%02d.png", i)));
+        }
+        //存放砖块行列坐标
+        int[][] brickpostions = {
+                {3,3},{2,6},{3,6},{4,6},{17,2},{19,2},
+                {16,5},{18,5},{20,5},{45,2},{36,5},
+                {43,5},{45,5},{47,5}
+
+        };
+        bricks = new ArrayList<Brick>();
+
+        for (int i = 0; i < brickpostions.length; i++) {
+
+            int[] brickpostion = brickpostions[i];
+            Brick brick = new Brick(40, 40, brickBitmaps);
+            brick.setPosition(40*brickpostion[0],40*brickpostion[1]);
+            brick.createItem(true, mushroomBitmap);
+            brick.setVisiable(true);
+            bricks.add(brick);
+        }
+
+
+
+        rectF = new RectF();
+        mario = new Mario(32, 62, bitmaps);
+        mario.setVisiable(true);
+        mario.setPosition(0,300);
+
+        isEnemyShown1 = false;
+        isEnemyShown2 = false;
+        isEnemyShown3 = false;
+
+        mPaint = new Paint();
+        score = (Integer) SPUtils.get(context,"hiscore",0);
+
+        //region array
+        /************ 第一关***********碰撞层 *******/
+
+        int map_peng01[][] =getMapArray();
 
 //		/************ 第一关***********背景层 *******/
 //		int map_back01[][] = {
@@ -613,8 +654,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 //                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
 //                        30, 30, 30, 30 }
 //        };
-
-
 //
 //		/************ 第一关***********遮蔽层 *******/
 //		int map_zhebi01[][] = {
@@ -760,7 +799,17 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                         lockCanvas.drawText(String.format(Locale.CHINA,"%06d",score),20,20,mPaint);
                         if(bricks!=null){
                             for (int i = 0; i < bricks.size(); i++) {
-                                bricks.get(i).draw(lockCanvas);
+                                Brick brick = bricks.get(i);
+                                brick.draw(lockCanvas);
+                                //绘制砖块内的道具
+                                Mushroom mushroom = brick.getMushroom();
+                                if(mushroom!=null){
+                                    if(mushroom.isVisiable()){
+                                        mushroom.draw(lockCanvas);
+                                    }
+                                }
+
+
                             }
                         }
 
@@ -789,7 +838,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             for (int i = 0; i < bricks.size(); i++) {
                 Brick brick = bricks.get(i);
 
-                if(mario.siteCollisionWith(brick,Site.下中) && mario.isJumping()  ){
+                if(mario.siteCollisionWith(brick, 下中) && mario.isJumping()  ){
                     mario.setJumping(false);
                             //坐标修正
                             //取得脚部坐标
@@ -802,12 +851,47 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 }
                 if(mario.siteCollisionWith(brick,Site.上中) && mario.isJumping()){
                     speedY = Math.abs(speedY);
+
+                    if(!brick.isJumping()){
+                        brick.setSpeedY(-4);
+
+                        brick.setJumping(true);
+                    }
                 }
                 if(mario.siteCollisionWith(brick,Site.左中)){
                     mario.move(4,0);
                 }
                 if(mario.siteCollisionWith(brick,Site.右中)){
                     mario.move(-4,0);
+                }
+
+            }
+        }
+    }
+
+    private  void MushroomCollisionWithBrick(){
+
+        if(bricks!=null){
+            for (int i = 0; i < bricks.size(); i++) {
+                Brick brick = bricks.get(i);
+                Mushroom mushroom = bricks.get(i).getMushroom();
+
+                if(mushroom!=null && mushroom.isVisiable()){
+                    for (int j = 0; j < bricks.size(); j++) {
+                        Brick brick1 = bricks.get(j);
+                        if(mushroom.siteCollisionWith(brick1,下中)){
+                            if(mushroom.isJumping()){
+                                mushroom.setJumping(false);
+                                int footY = mushroom.getY() + mushroom.getHeight();
+                                //取整
+                                int newY = footY / tiledLayer_peng01.getHeight()
+                                        * tiledLayer_peng01.getHeight()
+                                        - mushroom.getHeight();
+                                mushroom.setPosition(mushroom.getX(),newY);
+                            }
+                        }
+                    }
+
                 }
 
             }
@@ -841,6 +925,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             //落地判断
             else if(!mario.isJumping()){
                 mario.setJumping(true);
+
                 speedY = 0 ;
             }
 
@@ -897,6 +982,52 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     			}
     		}
     	}
-        
+    	if(bricks!=null){
+            for(int i=0;i<bricks.size();i++){
+                Brick brick = bricks.get(i);
+                Mushroom mushroom = brick.getMushroom();
+                if(mushroom!=null){
+                    if(mushroom.isVisiable()){
+
+//                    脚部碰撞
+                        if(mushroom.siteCollisionWith(tiledLayer_peng01, 下左)||
+                                mushroom.siteCollisionWith(tiledLayer_peng01, 下左)||
+                                mushroom.siteCollisionWith(tiledLayer_peng01, 下左)){
+                            mushroom.setJumping(false);
+                            //坐标修正
+                            //取得脚部坐标
+                            int footY = mushroom.getY() + mushroom.getHeight();
+                            //取整
+                            int newY = footY / tiledLayer_peng01.getHeight()
+                                    * tiledLayer_peng01.getHeight()
+                                    - mushroom.getHeight();
+                            mushroom.setPosition(mushroom.getX(),newY);
+                        }
+//                    落地判断
+                        else if(!mushroom.isJumping()){
+                            mushroom.setJumping(true);
+                            mushroom.setSpeedY(0);
+                        }
+
+                        //左边碰撞
+                        if(mushroom.siteCollisionWith(tiledLayer_peng01,左上)||
+                                mushroom.siteCollisionWith(tiledLayer_peng01,左中)||
+                                mushroom.siteCollisionWith(tiledLayer_peng01,左下)){
+//                        mushroom.setMirror(false);
+                            mushroom.setDirection(上右);
+                        }
+                        //右边碰撞
+                        if(mushroom.siteCollisionWith(tiledLayer_peng01,右上)||
+                                mushroom.siteCollisionWith(tiledLayer_peng01,右中)||
+                                mushroom.siteCollisionWith(tiledLayer_peng01,右下)){
+                            mushroom.setDirection(上左);
+
+                        }
+                    }
+                }
+
+            }
+        }
+
     }
 }
