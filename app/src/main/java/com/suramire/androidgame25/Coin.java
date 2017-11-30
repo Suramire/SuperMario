@@ -11,7 +11,7 @@ import java.util.List;
 public class Coin extends Sprite {
     public Coin(int width, int height, List<Bitmap> bitmaps) {
         super(width, height, bitmaps);
-        setmFrameSequenceIndex(0);
+        setmFrameSequenceIndex(3);
     }
 
     @Override
@@ -19,8 +19,5 @@ public class Coin extends Sprite {
         if(isVisiable()){
             nextFrame();
         }
-//        if(getmFrameSequenceIndex()==0){
-//            setmFrameSequenceIndex(1);
-//        }
     }
 }

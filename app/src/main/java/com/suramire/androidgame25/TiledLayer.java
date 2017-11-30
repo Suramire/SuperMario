@@ -20,13 +20,8 @@ public class TiledLayer {
     private int mRows;
     private int mCols;
     private int[][] mTiledCell;
-
     private int[] mTiledX;
     private int[] mTiledY;
-
-
-
-
     //endregion
 
     //region Getter and Setter
@@ -112,7 +107,6 @@ public class TiledLayer {
         int h = bitmap.getHeight() / height;
         mTiledX = new int[w*h+1];
         mTiledY = new int[w*h+1];
-
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
                 mTiledX[i * w + j + 1] = j * width;
@@ -124,18 +118,10 @@ public class TiledLayer {
 
     }
 
-    public void setPosition(int x, int y) {
-        this.mX = x;
-        this.mY = y;
-    }
-
     public void move(float x, float y) {
         mY += y;
         mX += x;
         outOfBounds();
-    }
-
-    public void logic() {
     }
 
     public void draw(Canvas canvas) {
@@ -157,9 +143,10 @@ public class TiledLayer {
         }
     }
 
-
-
-    protected void outOfBounds() {
+    /**
+     * 地图的边界处理
+     */
+    private void outOfBounds() {
         if(getX()>0){
             setX(0);
         }else if(getX()<800-getCols()*getWidth()){

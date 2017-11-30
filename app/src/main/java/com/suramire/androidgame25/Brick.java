@@ -2,8 +2,6 @@ package com.suramire.androidgame25;
 
 import android.graphics.Bitmap;
 
-import com.suramire.androidgame25.util.L;
-
 import java.util.List;
 
 /**
@@ -11,19 +9,27 @@ import java.util.List;
  */
 
 public class Brick extends Sprite {
+    //表示道具类型 枚举
+    private ItemType itemType;
 
-    private Mushroom mushroom;
 
 
-
+    private MySprite item;
     //标志道具是否已显示
     private  boolean hasItem;
-
     //标志砖块是否是上下移动状态
     private boolean isJumping;
     //上下移动的速度
     private int speedY;
 
+    //region Getter&Setter
+    public ItemType getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(ItemType itemType) {
+        this.itemType = itemType;
+    }
     public boolean isHasItem() {
         return hasItem;
     }
@@ -32,12 +38,12 @@ public class Brick extends Sprite {
         this.hasItem = hasItem;
     }
 
-    public Mushroom getMushroom() {
-        return mushroom;
+    public MySprite getItem() {
+        return item;
     }
 
-    public void setMushroom(Mushroom mushroom) {
-        this.mushroom = mushroom;
+    public void setItem(Mushroom item) {
+        this.item = item;
     }
 
     public boolean isJumping() {
@@ -55,6 +61,7 @@ public class Brick extends Sprite {
     public void setSpeedY(int speedY) {
         this.speedY = speedY;
     }
+    //endregion
 
     public Brick(int width, int height, List<Bitmap> bitmaps) {
         super(width, height, bitmaps);
@@ -64,10 +71,8 @@ public class Brick extends Sprite {
     public void logic() {
         if(isJumping()){
             if(hasItem){
-                // TODO: 2017/11/29 这里显示出道具
-
-                mushroom.setVisiable(true);
-                mushroom.setPosition(getX(),getY()-getHeight());
+                item.setVisiable(true);
+                item.setPosition(getX(),getY()-getHeight());
                 hasItem = false;
             }
             move(0,speedY++);
@@ -82,10 +87,25 @@ public class Brick extends Sprite {
      * @param e 是否添加标志位
      * @param bitmap 道具图片（单帧方式）
      */
-    public void createItem(boolean e,Bitmap bitmap){
+    public void createItem(boolean e,Bitmap bitmap,ItemType type){
+        setItemType(type);
         if(e){
-            this.mushroom = new Mushroom(bitmap);
-            this.mushroom.setDirection(Site.上右);
+            switch (type){
+                case Mushroom:{
+                    //蘑菇默认往右移动
+                    item = new Mushroom(bitmap);
+                    this.item.setDirection(Site.右);
+                }break;
+                case Coin:{
+
+                }break;
+                case Flower:{
+                    //花默认不移动
+                    item = new Flower(bitmap);
+                    this.item.setDirection(Site.上);
+                }break;
+            }
+
             hasItem = true;
         }
     }

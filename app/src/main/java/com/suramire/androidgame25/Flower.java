@@ -7,9 +7,9 @@ import android.graphics.Bitmap;
  * Created by Suramire on 2017/11/29.
  */
 
-public class Mushroom extends MySprite {
+public class Flower extends MySprite {
 
-    public Mushroom(Bitmap bitmap) {
+    public Flower(Bitmap bitmap) {
         super(bitmap);
     }
 }
