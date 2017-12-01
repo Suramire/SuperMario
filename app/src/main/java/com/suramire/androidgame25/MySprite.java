@@ -2,6 +2,8 @@ package com.suramire.androidgame25;
 
 import android.graphics.Bitmap;
 
+import java.util.List;
+
 /**
  * Created by Suramire on 2017/11/30.
  * 用于道具显示与逻辑处理
@@ -9,7 +11,7 @@ import android.graphics.Bitmap;
 
 public class MySprite extends Sprite {
     private boolean isJumping;
-    private int speedY;
+    public int speedY;
     //道具移动的方向
     private Site direction;
     //region Getter & Setter
@@ -41,6 +43,10 @@ public class MySprite extends Sprite {
 
     public MySprite(Bitmap bitmap) {
         super(bitmap);
+    }
+
+    public MySprite(int width, int height, List<Bitmap> bitmaps) {
+        super(width, height, bitmaps);
     }
 
     @Override

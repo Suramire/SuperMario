@@ -15,15 +15,22 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
-import com.suramire.androidgame25.util.L;
+import com.suramire.androidgame25.item.Coin;
+import com.suramire.androidgame25.item.Flower;
+import com.suramire.androidgame25.item.Mushroom;
+import com.suramire.androidgame25.item.Star;
 import com.suramire.androidgame25.util.SPUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import static com.suramire.androidgame25.Site.上中;
+import static com.suramire.androidgame25.Site.上右;
 import static com.suramire.androidgame25.Site.上左;
 import static com.suramire.androidgame25.Site.下;
 import static com.suramire.androidgame25.Site.下中;
+import static com.suramire.androidgame25.Site.下右;
 import static com.suramire.androidgame25.Site.下左;
 import static com.suramire.androidgame25.Site.右;
 import static com.suramire.androidgame25.Site.右上;
@@ -36,7 +43,8 @@ import static com.suramire.androidgame25.Site.左中;
 
 
 public class MyView2 extends SurfaceView implements Callback, Runnable {
-    //region 字段区
+    //region Field
+    private boolean isPause;
     private SurfaceHolder holder;
     private boolean isRunning;
     private Canvas lockCanvas;
@@ -76,7 +84,17 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private List<Bitmap> marioBitmaps;
     private List<Bitmap> marioFireBitmaps;
     private Bitmap fireBallBitmap;
+    private int time;
+    private Thread thread;
+    private List<Bitmap> marioSmallBitmaps;
 
+    public boolean isPause() {
+        return isPause;
+    }
+
+    public void setPause(boolean pause) {
+        isPause = pause;
+    }
     //endregion
     //region 通用方法
     public MyView2(Context context) {
@@ -98,6 +116,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     public void surfaceCreated(SurfaceHolder holder) {
         isRunning = true;
         new Thread(this).start();
+
     }
 
     @Override
@@ -118,6 +137,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         if(!isLogo){
             isLogo =true;
+            if(!thread.isAlive()){
+                thread.start();
+            }
+
         }
 
         if(isGameOver){
@@ -126,6 +149,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         }else{
             if(isShowCounter){
                 init();
+                if(!thread.isAlive()){
+                    thread.start();
+                }
             }
         }
 
@@ -177,15 +203,19 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     @Override
     public void run() {
         init();
-        while (isRunning) {
-            long startTime = System.currentTimeMillis();
-            myLogic();
-            myDraw();
-            long endTime = System.currentTimeMillis();
-            long time = endTime - startTime;
-            if (time < 1000 / 30) {
-                SystemClock.sleep(1000 / 30 - time);
+        while (isRunning ) {
+            //游戏暂停
+            if(!isPause()){
+                long startTime = System.currentTimeMillis();
+                myLogic();
+                myDraw();
+                long endTime = System.currentTimeMillis();
+                long time = endTime - startTime;
+                if (time < 1000 / 30) {
+                    SystemClock.sleep(1000 / 30 - time);
+                }
             }
+
         }
     }
 
@@ -249,42 +279,42 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                         0, 0, 0, 0, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0,
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 31, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 41,
                         42, 43, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 27, 0, 0, 27, 0, 0,
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35,
                         0, 0, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 46,
                         47, 48, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 27, 27, 27, 0, 0, 27, 27, 0,
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40,
                         0, 27, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 51,
                         52, 53, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0 },
-                { 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 0, 0, 26, 26, 26,
+                { 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26 },
-                { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 0, 0, 30, 30, 30,
+                { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30 },
-                { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 0, 0, 30, 30, 30,
+                { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
@@ -297,6 +327,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     //endregion
 
     private void myLogic() {
+        if(time<=0){
+            mario.setDead(true);
+
+        }
 
         if(!isShowCounter && isInited && isLogo){
             mario.logic();
@@ -323,7 +357,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     if(item!=null){
                         if(item.isVisiable()){
                             item.logic();
-
                             //玛丽吃到道具(初始状态)
                             if(item.collisionWith(mario)){
                                 //判断道具类型
@@ -368,6 +401,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                         }
                                         mario.setBullets(bullets);
                                     }
+                                }else if(item instanceof Star){
+                                    //玛丽吃到无敌星后变成无敌状态
+                                    mario.setInvincible(true);
+                                    // TODO: 2017/12/1 加音效
                                 }
 
                                 //吃到后蘑菇消失
@@ -440,14 +477,43 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 for(int i=0;i<enemies.size();i++){
                     Enemy enemy = enemies.get(i);
                     if(!enemy.isDead()&&mario.collisionWith(enemy)){
-                        if(mario.isJumping()){
+                        if(mario.isInvincible()){
+                            enemy.setDead(true);
+                            //杀死敌人时获得100积分
+                            updateScore(100);
+                        }else if(mario.isJumping()){
                             enemy.setDead(true);
                             //杀死敌人时获得100积分
                             updateScore(100);
                             speedY = -10;
                         }else{
-                            mario.setDead(true);
-                            speedY = -16;
+                            // TODO: 2017/12/1  坐标修正 状态变化时应有免伤时间
+                            if(!mario.isZeroDamage()){
+                                if(mario.getStatus()!=0){
+                                    mario.setStatus(mario.getStatus()-1);
+                                    switch (mario.getStatus()){
+                                        case 0:{
+                                            int x = mario.getX();
+                                            int y = mario.getY();
+                                            mario = new Mario(20, 20, marioSmallBitmaps);
+                                            mario.setZeroDamage(true);
+                                            mario.setVisiable(true);
+                                            mario.setPosition(x,y);
+                                        }break;
+                                        case 1:{
+                                            int x = mario.getX();
+                                            int y = mario.getY();
+                                            mario = new Mario(32,62,marioBitmaps);
+                                            mario.setVisiable(true);
+                                            mario.setZeroDamage(true);
+                                            mario.setPosition(x,y);
+                                        }
+                                    }
+                                }else{
+                                    mario.setDead(true);
+                                    speedY = -16;
+                                }
+                            }
                         }
                     }
                 }
@@ -457,16 +523,16 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     }
 
     private void myStep() {
-//		if(tiledLayer_peng01.getX()==0 && !isEnemyShown1){
-//			for (int i = 0; i < 3; i++) {
-//				Enemy enemy = new Enemy(32, 32, bitmaps2);
-//				enemy.setVisiable(true);
-//				enemy.setMirror(true);
-//				enemy.setPosition(200+60*i, 328);
-//				enemies.add(enemy);
-//			}
-//			isEnemyShown1 = true;
-//		}
+		if(tiledLayer_peng01.getX()==0 && !isEnemyShown1){
+			for (int i = 0; i < 3; i++) {
+				Enemy enemy = new Enemy(32, 32, bitmaps2);
+				enemy.setVisiable(true);
+				enemy.setMirror(true);
+				enemy.setPosition(200+60*i, 328);
+				enemies.add(enemy);
+			}
+			isEnemyShown1 = true;
+		}
 		if(tiledLayer_peng01.getX() == -160 && !isEnemyShown2){
 			enemies.clear();
 			for (int i = 0; i < 3; i++) {
@@ -551,6 +617,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                  speedY = -16;
     		 }else{
                  isShowCounter = true;
+
     		 }
          }
 
@@ -558,6 +625,16 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     }
 
     private void init() {
+        time = 6*60;
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (time > 0 && isLogo) {
+                    SystemClock.sleep(1000);
+                    time--;
+                }
+            }
+        });
         isInited = false;
         isShowCounter = false;
         isGameOver = false;
@@ -572,9 +649,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         logoBitmap = getBitmap("logo/logo.jpg");
         Bitmap mushroomBitmap = getBitmap("item/mushroom.png");
         Bitmap flowerBitmap = getBitmap("item/flower.png");
+        Bitmap starBitmap = getBitmap("item/object_star.png");
         fireBallBitmap = getBitmap("item/object_fireball.png");
 
-        List<Bitmap> marioSmallBitmaps = new ArrayList<Bitmap>();
+        marioSmallBitmaps = new ArrayList<Bitmap>();
         marioFireBitmaps = new ArrayList<Bitmap>();
 
 
@@ -611,9 +689,13 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         }
         //存放砖块行列坐标
         int[][] brickpostions = {
-                {3,3},{2,6},{3,6},{4,6},{17,2},{19,2},
+                {3,3},{17,2},{19,2},
                 {16,5},{18,5},{20,5},{45,2},{36,5},
                 {43,5},{45,5},{47,5}
+
+        };
+        int[][] brickpostions2 = {
+                {2,6},{3,6},{4,6}
 
         };
         bricks = new ArrayList<Brick>();
@@ -621,10 +703,30 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         for (int[] brickpostion : brickpostions) {
             Brick brick = new Brick(40, 40, brickBitmaps);
             brick.setPosition(40 * brickpostion[0], 40 * brickpostion[1]);
-            brick.createItem(true, flowerBitmap,ItemType.Flower);
+//          brick.createItem(true, flowerBitmap,ItemType.Flower);
+            brick.createItem(true, coinBitmaps,ItemType.Coin);
             brick.setVisiable(true);
             bricks.add(brick);
         }
+
+        Brick brick = new Brick(40, 40, brickBitmaps);
+        brick.setPosition(40 * brickpostions2[0][0], 40 * brickpostions2[0][1]);
+//          brick.createItem(true, flowerBitmap,ItemType.Flower);
+        brick.createItem(true, mushroomBitmap,ItemType.Mushroom);
+        brick.setVisiable(true);
+        bricks.add(brick);
+        Brick brick2 = new Brick(40, 40, brickBitmaps);
+        brick2.setPosition(40 * brickpostions2[1][0], 40 * brickpostions2[1][1]);
+//          brick.createItem(true, flowerBitmap,ItemType.Flower);
+        brick2.createItem(true, flowerBitmap,ItemType.Flower);
+        brick2.setVisiable(true);
+        bricks.add(brick2);
+        Brick brick3 = new Brick(40, 40, brickBitmaps);
+        brick3.setPosition(40 * brickpostions2[2][0], 40 * brickpostions2[2][1]);
+//          brick.createItem(true, flowerBitmap,ItemType.Flower);
+        brick3.createItem(true, starBitmap,ItemType.Star);
+        brick3.setVisiable(true);
+        bricks.add(brick3);
 
 
 
@@ -731,6 +833,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 mario.getBullets().get(i).draw(lockCanvas);
                             }
                         }
+                        //绘制时间
+                        lockCanvas.drawText(String.valueOf(time),750,20,mPaint);
+
+
                     }
                 }
             }
@@ -767,7 +873,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
                     if(!brick.isJumping()){
                         brick.setSpeedY(-4);
-
                         brick.setJumping(true);
                     }
                 }
@@ -823,14 +928,14 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             
     		//头顶碰撞
             if(mario.siteCollisionWith(tiledLayer_peng01, 上左)||
-                    mario.siteCollisionWith(tiledLayer_peng01, 上左)||
-                    mario.siteCollisionWith(tiledLayer_peng01, 上左)){
+                    mario.siteCollisionWith(tiledLayer_peng01, 上中)||
+                    mario.siteCollisionWith(tiledLayer_peng01, 上右)){
                 speedY = Math.abs(speedY);
             }
             //脚部碰撞
             if(mario.siteCollisionWith(tiledLayer_peng01, 下左)||
-                    mario.siteCollisionWith(tiledLayer_peng01, 下左)||
-                    mario.siteCollisionWith(tiledLayer_peng01, 下左)){
+                    mario.siteCollisionWith(tiledLayer_peng01, 下中)||
+                    mario.siteCollisionWith(tiledLayer_peng01, 下右)){
                 mario.setJumping(false);
                 //坐标修正
                 //取得脚部坐标
@@ -844,7 +949,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             //落地判断
             else if(!mario.isJumping()){
                 mario.setJumping(true);
-
                 speedY = 0 ;
             }
 
@@ -865,20 +969,27 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     Bullet bullet = mario.getBullets().get(i);
                     if(bullet.isVisiable()){
                         //子弹与地图碰撞则消失
-                        if(bullet.siteCollisionWith(tiledLayer_peng01, 上左)||
-                                bullet.siteCollisionWith(tiledLayer_peng01, 上左)||
-                                bullet.siteCollisionWith(tiledLayer_peng01, 上左)||
-                                bullet.siteCollisionWith(tiledLayer_peng01, 下左)||
-                                bullet.siteCollisionWith(tiledLayer_peng01, 下左)||
-                                bullet.siteCollisionWith(tiledLayer_peng01, 下左)||
-                                bullet.siteCollisionWith(tiledLayer_peng01,左上)||
-                                bullet.siteCollisionWith(tiledLayer_peng01,左中)||
-                                bullet.siteCollisionWith(tiledLayer_peng01,左下)||
-                                bullet.siteCollisionWith(tiledLayer_peng01,右上)||
-                                bullet.siteCollisionWith(tiledLayer_peng01,右中)||
-                                bullet.siteCollisionWith(tiledLayer_peng01,右下)){
-                            bullet.setVisiable(false);
+                        if(bullet.siteCollisionWith(tiledLayer_peng01,上左)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,上中)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,上右)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,下左)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,下中)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,下右)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,左上)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,左中)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,左下)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,右上)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,右中)||
+                           bullet.siteCollisionWith(tiledLayer_peng01,右下)){
+                           bullet.setVisiable(false);
                         }
+//                        else if(bullet.siteCollisionWith(tiledLayer_peng01, 下左)||
+//                                bullet.siteCollisionWith(tiledLayer_peng01, 下中)||
+//                                bullet.siteCollisionWith(tiledLayer_peng01, 下右)){
+////                                bullet.setSpeedY(-10);
+//                                L.e("collision 下");
+////                                bullet.setJumping(true);
+//                        }
                         if(enemies!=null){
                             for (int j = 0; j < enemies.size(); j++) {
                                 Enemy enemy = enemies.get(j);

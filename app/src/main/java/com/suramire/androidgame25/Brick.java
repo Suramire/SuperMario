@@ -2,6 +2,11 @@ package com.suramire.androidgame25;
 
 import android.graphics.Bitmap;
 
+import com.suramire.androidgame25.item.Coin;
+import com.suramire.androidgame25.item.Flower;
+import com.suramire.androidgame25.item.Mushroom;
+import com.suramire.androidgame25.item.Star;
+
 import java.util.List;
 
 /**
@@ -11,9 +16,6 @@ import java.util.List;
 public class Brick extends Sprite {
     //表示道具类型 枚举
     private ItemType itemType;
-
-
-
     private MySprite item;
     //标志道具是否已显示
     private  boolean hasItem;
@@ -80,6 +82,9 @@ public class Brick extends Sprite {
                 setJumping(false);
             }
         }
+        if(!hasItem){
+            setmFrameSequenceIndex(4);
+        }
     }
 
     /**
@@ -104,6 +109,31 @@ public class Brick extends Sprite {
                     item = new Flower(bitmap);
                     this.item.setDirection(Site.上);
                 }break;
+                case Star:{
+                    item = new Star(bitmap);
+                    this.item.setDirection(Site.上);
+                }break;
+            }
+
+            hasItem = true;
+        }
+    }
+
+    /**
+     * 为砖块添加道具
+     * @param e 是否添加标志位
+     * @param bitmaps 道具图片（多帧方式）
+     */
+    public void createItem(boolean e,List<Bitmap>  bitmaps,ItemType type){
+        setItemType(type);
+        if(e){
+            switch (type){
+
+                case Coin:{
+                    item = new Coin(40,40,bitmaps);
+                    this.item.setDirection(Site.上);
+                }break;
+
             }
 
             hasItem = true;

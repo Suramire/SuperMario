@@ -5,5 +5,5 @@ package com.suramire.androidgame25;
  */
 
 public enum ItemType {
-    Mushroom,Flower,Coin
+    Mushroom,Flower,Coin,Star
 }

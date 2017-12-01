@@ -2,6 +2,7 @@ package com.suramire.androidgame25;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.os.SystemClock;
 
 import com.suramire.androidgame25.util.L;
 
@@ -20,8 +21,35 @@ public class Mario extends Sprite {
     private boolean isJumping;//是否跳跃
     private boolean isDead;//是否死亡
     private int status ;//当前状态 0=初始化 1=吃蘑菇后 2=吃花后
+    private boolean isInvincible;//标志是否无敌状态
+    private boolean isZeroDamage;//标志是否处于免伤状态
+    private boolean threadIsRunning;
+    private boolean thread2IsRunning;
 
+    private int invincibleTime;
+    private int zeroDamageTime;
 
+    public boolean isZeroDamage() {
+        return isZeroDamage;
+    }
+
+    public void setZeroDamage(boolean zeroDamage) {
+        if(zeroDamage){
+            zeroDamageTime = 3;
+        }
+        isZeroDamage = zeroDamage;
+    }
+
+    public boolean isInvincible() {
+        return isInvincible;
+    }
+
+    public void setInvincible(boolean invincible) {
+        if(invincible){
+            invincibleTime = 10;
+        }
+        isInvincible = invincible;
+    }
 
     List<Bullet> bullets;
     private int delay;
@@ -87,6 +115,9 @@ public class Mario extends Sprite {
     @Override
     public void logic() {
 
+
+        L.e("mario.isInvincible:"+isInvincible());
+
         if(isDead()){
             setmFrameSequenceIndex(3);
         }else if(isJumping()){
@@ -110,6 +141,8 @@ public class Mario extends Sprite {
                     bullet.setPosition(getX()+getWidth()/2,getY()+getHeight()/2);
                     bullet.setDirection(isMirror?Site.左:Site.右);
                     bullet.setVisiable(true);
+                    bullet.setSpeedY(-4);
+                    bullet.setJumping(true);
                     delay=0;
                     break;
                 }
@@ -287,6 +320,9 @@ public class Mario extends Sprite {
 
         return false;
     }
+
+
+
 
 
 }

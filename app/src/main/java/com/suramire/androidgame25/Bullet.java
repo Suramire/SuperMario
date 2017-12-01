@@ -2,7 +2,7 @@ package com.suramire.androidgame25;
 
 import android.graphics.Bitmap;
 
-import com.suramire.androidgame25.util.L;
+
 
 
 /**
@@ -29,14 +29,23 @@ public class Bullet extends MySprite {
             switch (getDirection()){
                 //道具往左移动
                 case 左:{
-                    move(-8,0);
+                    if(isJumping()){
+                        move(-8,speedY++);
+                    }else{
+                        move(-8,0);
+                    }
+
                 }break;
                 //道具往右移动
                 case 右:{
-                    move(8,0);
+                    if(isJumping()){
+                        move(8,speedY++);
+                    }else{
+                        move(8,0);
+
+                    }
                 }break;
             }
-
         }
     }
 }
