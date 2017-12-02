@@ -4,6 +4,8 @@
       <root url="jar://$USER_HOME$/Android/Sdk/platforms/android-19/android.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/Android/Sdk/platforms/android-19/android.jar!/" />
+    </SOURCES>
   </library>
 </component>

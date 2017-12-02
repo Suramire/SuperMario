@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.SystemClock;
 
-import com.suramire.androidgame25.util.L;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +12,10 @@ import java.util.List;
  */
 
 public class Mario extends Sprite {
-
-    //region Fields
+	
+	private final Thread invincibleThread;
+	private final Thread zeroDamagThread;
+	//region Fields
     private boolean isMirror;//是否翻转
     private boolean isRunning;//是否跑动
     private boolean isJumping;//是否跳跃
@@ -23,39 +23,71 @@ public class Mario extends Sprite {
     private int status ;//当前状态 0=初始化 1=吃蘑菇后 2=吃花后
     private boolean isInvincible;//标志是否无敌状态
     private boolean isZeroDamage;//标志是否处于免伤状态
-    private boolean threadIsRunning;
-    private boolean thread2IsRunning;
-
-    private int invincibleTime;
-    private int zeroDamageTime;
-
-    public boolean isZeroDamage() {
-        return isZeroDamage;
-    }
-
-    public void setZeroDamage(boolean zeroDamage) {
-        if(zeroDamage){
-            zeroDamageTime = 3;
-        }
-        isZeroDamage = zeroDamage;
-    }
-
-    public boolean isInvincible() {
-        return isInvincible;
-    }
-
-    public void setInvincible(boolean invincible) {
-        if(invincible){
-            invincibleTime = 10;
-        }
-        isInvincible = invincible;
-    }
-
+    private int invincibleTime;//无敌时间
+    private int zeroDamageTime;//免伤时间
+	private boolean isInvincibleStop;
+	private boolean isZeroDamageStop;
+	private boolean isInvincibleThreadStarted;
+	private boolean isZeroDamageThreadStarted;
     List<Bullet> bullets;
     private int delay;
-    //endregion
+	//endregion
 
     //region Getter & Setter
+	
+	public int getInvincibleTime() {
+		return invincibleTime;
+	}
+	
+	public void setInvincibleTime(int invincibleTime) {
+		this.invincibleTime = invincibleTime;
+	}
+	
+	public int getZeroDamageTime() {
+		return zeroDamageTime;
+	}
+	
+	public void setZeroDamageTime(int zeroDamageTime) {
+		this.zeroDamageTime = zeroDamageTime;
+	}
+	
+	public boolean isInvincibleStop() {
+		return isInvincibleStop;
+	}
+	
+	public void setInvincibleStop(boolean invincibleStop) {
+		isInvincibleStop = invincibleStop;
+	}
+	
+	public boolean isZeroDamageStop() {
+		return isZeroDamageStop;
+	}
+	
+	public void setZeroDamageStop(boolean zeroDamageStop) {
+		isZeroDamageStop = zeroDamageStop;
+	}
+	
+	public boolean isZeroDamage() {
+		return isZeroDamage;
+	}
+	
+	public void setZeroDamage(boolean zeroDamage) {
+		if(zeroDamage){
+			zeroDamageTime = 3;
+		}
+		isZeroDamage = zeroDamage;
+	}
+	
+	public boolean isInvincible() {
+		return isInvincible;
+	}
+	
+	public void setInvincible(boolean invincible) {
+		if(invincible){
+			invincibleTime = 10;
+		}
+		isInvincible = invincible;
+	}
 
     public List<Bullet> getBullets() {
         return bullets;
@@ -95,30 +127,69 @@ public class Mario extends Sprite {
     public void setDead(boolean dead) {
         isDead = dead;
     }
+	public int getStatus() {
+		return status;
+	}
+	
+	public void setStatus(int status) {
+		this.status = status;
+		if(status==2){
+			bullets = new ArrayList<Bullet>();
+		}
+	}
     //endregion
 
-    public int getStatus() {
-        return status;
-    }
 
-    public void setStatus(int status) {
-        this.status = status;
-        if(status==2){
-            bullets = new ArrayList<Bullet>();
-        }
-    }
 
     public Mario(int width, int height, List<Bitmap> bitmaps) {
         super(width, height, bitmaps);
+	    invincibleThread = new Thread(new Runnable() {
+		    @Override
+		    public void run() {
+			    while (invincibleTime >= 1) {
+				    SystemClock.sleep(1000);
+				    invincibleTime--;
+			    }
+		    }
+	    });
+	    zeroDamagThread = new Thread(new Runnable() {
+		    @Override
+		    public void run() {
+			    while (zeroDamageTime >= 1) {
+				    SystemClock.sleep(1000);
+				    zeroDamageTime--;
+			    }
+			
+		    }
+	    });
     }
 
     @Override
     public void logic() {
-
-
-        L.e("mario.isInvincible:"+isInvincible());
-
+        if(isInvincible()){
+        	if(!isInvincibleThreadStarted){
+        		invincibleThread.start();
+		        isInvincibleThreadStarted = true;
+	        }
+	        if(invincibleTime<=0){
+        		isInvincible = false;
+		        isInvincibleThreadStarted = false;
+	        }
+        }
+        if(isZeroDamage()){
+        	if(!isZeroDamageThreadStarted){
+        		zeroDamagThread.start();
+		        isZeroDamageThreadStarted = true;
+	        }
+	        if(zeroDamageTime<=0){
+        		isZeroDamage = false;
+		        isZeroDamageThreadStarted = false;
+	        }
+        }
+        
+        
         if(isDead()){
+        	
             setmFrameSequenceIndex(3);
         }else if(isJumping()){
             setmFrameSequenceIndex(2);
@@ -320,6 +391,7 @@ public class Mario extends Sprite {
 
         return false;
     }
+
 
 
 

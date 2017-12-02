@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -19,6 +20,7 @@ import com.suramire.androidgame25.item.Coin;
 import com.suramire.androidgame25.item.Flower;
 import com.suramire.androidgame25.item.Mushroom;
 import com.suramire.androidgame25.item.Star;
+import com.suramire.androidgame25.util.L;
 import com.suramire.androidgame25.util.SPUtils;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,11 +86,15 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private List<Bitmap> marioBitmaps;
     private List<Bitmap> marioFireBitmaps;
     private Bitmap fireBallBitmap;
-    private int time;
+    private int time;//表示剩余时间
     private Thread thread;
     private List<Bitmap> marioSmallBitmaps;
-
-    public boolean isPause() {
+    private Bitmap finishBitmap;
+    private boolean isFinished;
+	private boolean isThreadStop;
+	private boolean isTouchEnable;//标志是否响应触摸事件
+	
+	public boolean isPause() {
         return isPause;
     }
 
@@ -115,6 +121,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         isRunning = true;
+	    isTouchEnable = true;
         new Thread(this).start();
 
     }
@@ -135,66 +142,77 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(!isLogo){
-            isLogo =true;
-            if(!thread.isAlive()){
-                thread.start();
-            }
+		if(isTouchEnable){
+			if(isFinished){
+				isFinished=false;
+				init();
+			}
+			
+			if(!isLogo){
+				isLogo =true;
+				if(thread!=null){
+					thread.start();
+				}
+				
+			}
+			
+			if(isGameOver){
+				lifeNumber = 3;
+				init();
+			}
+			else{
 
-        }
+				if(isShowCounter){
+					init();
+					if(isThreadStop){
+						
+						thread.start();
+						
+					}
 
-        if(isGameOver){
-            lifeNumber = 3;
-            init();
-        }else{
-            if(isShowCounter){
-                init();
-                if(!thread.isAlive()){
-                    thread.start();
-                }
-            }
-        }
+				}
+			}
+			
+			int pointCount = event.getPointerCount();
+			for (int i = 0; i < pointCount; i++) {
+				rectF.set(0,360*scaleY,60*scaleX,420*scaleY);
+				if(rectF.contains(event.getX(i),event.getY(i))){
+					//left running
+					mario.setMirror(true);
+					mario.setRunning(true);
+				}
+				
+				
+				rectF.set(120,360*scaleY,180*scaleX,420*scaleY);
+				if(rectF.contains(event.getX(i),event.getY(i))){
+					//right running
+					mario.setMirror(false);
+					mario.setRunning(true);
+				}
+				rectF.set(740,360*scaleY,800*scaleX,420*scaleY);
+				if(rectF.contains(event.getX(i),event.getY(i))){
+					//jump
+					if(!mario.isJumping()){
+						mario.setJumping(true);
+						speedY =-16;
+					}
+				}
+				
+				rectF.set(680,420*scaleY,740*scaleX,4800*scaleY);
+				if(rectF.contains(event.getX(i),event.getY(i))){
 
-
-        int pointCount = event.getPointerCount();
-        for (int i = 0; i < pointCount; i++) {
-            rectF.set(0,360*scaleY,60*scaleX,420*scaleY);
-            if(rectF.contains(event.getX(i),event.getY(i))){
-                //left running
-                mario.setMirror(true);
-                mario.setRunning(true);
-            }
-
-
-            rectF.set(120,360*scaleY,180*scaleX,420*scaleY);
-            if(rectF.contains(event.getX(i),event.getY(i))){
-                //right running
-                mario.setMirror(false);
-                mario.setRunning(true);
-            }
-            rectF.set(740,360*scaleY,800*scaleX,420*scaleY);
-            if(rectF.contains(event.getX(i),event.getY(i))){
-                //jump
-                if(!mario.isJumping()){
-                    mario.setJumping(true);
-                    speedY =-16;
-                }
-            }
-
-            rectF.set(680,420*scaleY,740*scaleX,4800*scaleY);
-            if(rectF.contains(event.getX(i),event.getY(i))){
-
-//                L.e("A clicked");
 //                L.e("mario.getY:" + mario.getY());
-                mario.fire();
-            }
-            //手指移开时停止移动
-            if(event.getAction() == MotionEvent.ACTION_UP){
-                //stop running
-                mario.setRunning(false);
-                performClick();
-            }
-        }
+					mario.fire();
+				}
+				//手指移开时停止移动
+				if(event.getAction() == MotionEvent.ACTION_UP){
+					//stop running
+					mario.setRunning(false);
+					performClick();
+				}
+			}
+		}
+        
         return true;
     }
 
@@ -237,99 +255,101 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
     private  int[][] getMapArray(){
         return new int[][]{
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 31, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 27, 27, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 31, 0, 31, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 31, 31, 31, 31, 31, 31, 31, 31, 0, 0, 0, 0,
-                        0, 0, 0, 0, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 31, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 41,
-                        42, 43, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35,
-                        0, 0, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 46,
-                        47, 48, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40,
-                        0, 27, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 51,
-                        52, 53, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-                        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-                        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-                        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-                        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-                        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-                        26, 26, 26, 26 },
-                { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30 },
-                { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30 }
+		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0 },
+		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0 },
+		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 31, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0 },
+		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0 },
+		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0 },
+		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 31, 0, 31, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 31, 31, 31, 31, 31, 31, 31, 31, 0, 0, 0, 0,
+				        0, 0, 0, 0, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0 },
+		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 31, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 41,
+				        42, 43, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0 },
+		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35,
+				        0, 0, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 46,
+				        47, 48, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0 },
+		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40,
+				        0, 27, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 51,
+				        52, 53, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				        0, 0, 0, 0 },
+		        { 26, 26, 26, 26, 26, 26, 26, 26, 0, 26, 26, 26, 26, 26, 26, 26,
+				        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+				        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+				        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+				        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+				        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+				        26, 26, 26, 26 },
+		        { 30, 30, 30, 30, 30, 30, 30, 30, 0, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30 },
+		        { 30, 30, 30, 30, 30, 30, 30, 30, 0, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+				        30, 30, 30, 30 }
         };
     }
 
     //endregion
 
     private void myLogic() {
+        //超时则死亡
         if(time<=0){
             mario.setDead(true);
-
+	        isThreadStop = true;
+	        waitAMoment();
         }
 
         if(!isShowCounter && isInited && isLogo){
@@ -366,9 +386,24 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                         //取得原坐标并进行修正
                                         int x = mario.getX();
                                         int y = mario.getY()-20;
-                                        //显示变大后的玛丽
+	                                    boolean zeroDamage = mario.isZeroDamage();
+	                                    boolean invincible = mario.isInvincible();
+	                                    int invincibleTime = mario.getInvincibleTime();
+	                                    int zeroDamageTime = mario.getZeroDamageTime();
+	                                    //显示变大后的玛丽
                                         mario = new Mario(32,62,marioBitmaps);
+	                                    mario.setInvincible(invincible);
+	                                    mario.setZeroDamage(zeroDamage);
+	
+	                                    if(zeroDamage){
+		                                    mario.setZeroDamageTime(zeroDamageTime);
+	                                    }
+	                                    if(invincible){
+		                                    mario.setInvincibleTime(invincibleTime);
+	                                    }
                                         mario.setPosition(x,y);
+	                                    mario.setZeroDamage(zeroDamage);
+	                                    mario.setInvincible(invincible);
                                         mario.setVisiable(true);
                                         mario.setStatus(1);
                                     }
@@ -384,8 +419,22 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                             y = mario.getY();
                                         }
                                         //显示变大后的玛丽
+	                                    boolean zeroDamage = mario.isZeroDamage();
+	                                    boolean invincible = mario.isInvincible();
+	                                    int invincibleTime = mario.getInvincibleTime();
+	                                    int zeroDamageTime = mario.getZeroDamageTime();
+	                                    
                                         mario = new Mario(32,62,marioFireBitmaps);
-                                        mario.setPosition(x,y);
+	                                    mario.setInvincible(invincible);
+	                                    mario.setZeroDamage(zeroDamage);
+	                                    if(zeroDamage){
+		                                    mario.setZeroDamageTime(zeroDamageTime);
+	                                    }
+	                                    if(invincible){
+		                                    mario.setInvincibleTime(invincibleTime);
+	                                    }
+	
+	                                    mario.setPosition(x,y);
                                         mario.setVisiable(true);
                                         mario.setStatus(2);
                                         //设置弹夹
@@ -404,9 +453,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 }else if(item instanceof Star){
                                     //玛丽吃到无敌星后变成无敌状态
                                     mario.setInvincible(true);
-                                    // TODO: 2017/12/1 加音效
+	
+	                                // TODO: 2017/12/1 加音效
                                 }
-
                                 //吃到后蘑菇消失
                                 item.setVisiable(false);
                                 updateScore(100);
@@ -487,15 +536,28 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                             updateScore(100);
                             speedY = -10;
                         }else{
-                            // TODO: 2017/12/1  坐标修正 状态变化时应有免伤时间
+                            // TODO: 2017/12/1  状态变化时应有免伤时间
                             if(!mario.isZeroDamage()){
-                                if(mario.getStatus()!=0){
+	                            if(mario.getStatus()!=0){
                                     mario.setStatus(mario.getStatus()-1);
                                     switch (mario.getStatus()){
                                         case 0:{
-                                            int x = mario.getX();
-                                            int y = mario.getY();
-                                            mario = new Mario(20, 20, marioSmallBitmaps);
+                                            int x = mario.getX()-12;
+                                            int y = mario.getY()+42;
+	                                        boolean zeroDamage = mario.isZeroDamage();
+	                                        boolean invincible = mario.isInvincible();
+	                                        int invincibleTime = mario.getInvincibleTime();
+	                                        int zeroDamageTime = mario.getZeroDamageTime();
+	                                        //显示变大后的玛丽
+	                                        mario = new Mario(20, 20, marioSmallBitmaps);
+	                                        mario.setInvincible(invincible);
+	                                        mario.setZeroDamage(zeroDamage);
+	                                        if(zeroDamage){
+		                                        mario.setZeroDamageTime(zeroDamageTime);
+	                                        }
+	                                        if(invincible){
+		                                        mario.setInvincibleTime(invincibleTime);
+	                                        }
                                             mario.setZeroDamage(true);
                                             mario.setVisiable(true);
                                             mario.setPosition(x,y);
@@ -503,15 +565,31 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                         case 1:{
                                             int x = mario.getX();
                                             int y = mario.getY();
-                                            mario = new Mario(32,62,marioBitmaps);
+	                                        boolean zeroDamage = mario.isZeroDamage();
+	                                        boolean invincible = mario.isInvincible();
+	                                        int invincibleTime = mario.getInvincibleTime();
+	                                        int zeroDamageTime = mario.getZeroDamageTime();
+	                                        //显示变大后的玛丽
+	                                        mario = new Mario(32,62,marioBitmaps);
+	                                        mario.setInvincible(invincible);
+	                                        mario.setZeroDamage(zeroDamage);
+	                                        mario.setStatus(1);
+	                                        if(zeroDamage){
+		                                        mario.setZeroDamageTime(zeroDamageTime);
+	                                        }
+	                                        if(invincible){
+		                                        mario.setInvincibleTime(invincibleTime);
+	                                        }
                                             mario.setVisiable(true);
                                             mario.setZeroDamage(true);
                                             mario.setPosition(x,y);
-                                        }
+                                        }break;
                                     }
                                 }else{
                                     mario.setDead(true);
+                                    isThreadStop = true;
                                     speedY = -16;
+		                            waitAMoment();
                                 }
                             }
                         }
@@ -521,8 +599,19 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             }
         }
     }
-
-    private void myStep() {
+	
+	private void waitAMoment() {
+		isTouchEnable = false;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				SystemClock.sleep(3000);
+				isTouchEnable = true;
+			}
+		}).start();
+	}
+	
+	private void myStep() {
 		if(tiledLayer_peng01.getX()==0 && !isEnemyShown1){
 			for (int i = 0; i < 3; i++) {
 				Enemy enemy = new Enemy(32, 32, bitmaps2);
@@ -556,7 +645,11 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             }
             isEnemyShown3 = true;
 		}
-	}
+		if(tiledLayer_peng01.getX() == -2800){
+		    isFinished = true;
+			waitAMoment();
+		}
+    }
 
 	/**
      * 处理移动与跳跃的逻辑
@@ -566,6 +659,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     	//1 死亡前先起跳
     	if(mario.isDead()){
     		mario.move(0, speedY++);
+		    
     	}else{
     		if(mario.isRunning()){
                 //左移
@@ -610,26 +704,41 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 mario.move(0,speedY++);
             }
     	}
-        if(mario.getY()>400){
-    		 //2 再次落下才表示游戏结束
-    		 if(!mario.isDead()){
-    			 mario.setDead(true);
-                 speedY = -16;
-    		 }else{
-                 isShowCounter = true;
-
-    		 }
-         }
+	
+	    if(mario.getY()>400){
+		    L.e("fall:"+mario.isDead());
+		    //2 再次落下才表示游戏结束
+		    if(!mario.isDead()){
+			    mario.setDead(true);
+			    isThreadStop = true;
+			    speedY = -16;
+			    waitAMoment();
+		    }else{
+			    if(!isShowCounter){
+				    new Thread(new Runnable() {
+					    @Override
+					    public void run() {
+						    SystemClock.sleep(300);
+						    isShowCounter = true;
+					    }
+				    }).start();
+			    }
+		    }
+	    }
+	    
 
 
     }
 
     private void init() {
+	    isThreadStop = false;
+        isFinished = false;
         time = 6*60;
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (time > 0 && isLogo) {
+            	//当显示过开场图片并且时间不为负数且线程停止标志位不为真时
+                while (!isThreadStop&& time > 0 && isLogo) {
                     SystemClock.sleep(1000);
                     time--;
                 }
@@ -647,6 +756,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         gameoverbitmap = getBitmap("menu/gameover.png");
         marioBitmap = getBitmap("mario/mario0.png");
         logoBitmap = getBitmap("logo/logo.jpg");
+        finishBitmap = getBitmap("logo/finish.jpg");
         Bitmap mushroomBitmap = getBitmap("item/mushroom.png");
         Bitmap flowerBitmap = getBitmap("item/flower.png");
         Bitmap starBitmap = getBitmap("item/object_star.png");
@@ -673,15 +783,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     "coin/coin%01d.png",i)));
         }
         coins = new ArrayList<Coin>();
-//        int[][] coinpostions = {
-//                {2,7},{3,7},{4,7}
-//        };
-//        for (int[] postion:coinpostions) {
-//            Coin coin = new Coin(40, 40, coinBitmaps);
-//            coin.setPosition(40*postion[0],40*postion[1]);
-//            coin.setVisiable(true);
-//            coins.add(coin);
-//        }
+
 
         List<Bitmap> brickBitmaps = new ArrayList<Bitmap>();
         for (int i = 0; i < 5; i++) {
@@ -711,19 +813,16 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
         Brick brick = new Brick(40, 40, brickBitmaps);
         brick.setPosition(40 * brickpostions2[0][0], 40 * brickpostions2[0][1]);
-//          brick.createItem(true, flowerBitmap,ItemType.Flower);
         brick.createItem(true, mushroomBitmap,ItemType.Mushroom);
         brick.setVisiable(true);
         bricks.add(brick);
         Brick brick2 = new Brick(40, 40, brickBitmaps);
         brick2.setPosition(40 * brickpostions2[1][0], 40 * brickpostions2[1][1]);
-//          brick.createItem(true, flowerBitmap,ItemType.Flower);
         brick2.createItem(true, flowerBitmap,ItemType.Flower);
         brick2.setVisiable(true);
         bricks.add(brick2);
         Brick brick3 = new Brick(40, 40, brickBitmaps);
         brick3.setPosition(40 * brickpostions2[2][0], 40 * brickpostions2[2][1]);
-//          brick.createItem(true, flowerBitmap,ItemType.Flower);
         brick3.createItem(true, starBitmap,ItemType.Star);
         brick3.setVisiable(true);
         bricks.add(brick3);
@@ -733,7 +832,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         rectF = new RectF();
         mario = new Mario(20, 20, marioSmallBitmaps);
         mario.setVisiable(true);
-        mario.setPosition(0,300);
+        mario.setPosition(0,342);
 
         isEnemyShown1 = false;
         isEnemyShown2 = false;
@@ -766,7 +865,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             mPaint.setColor(Color.WHITE);
             if(!isLogo){
                 lockCanvas.drawBitmap(logoBitmap,0,0,null);
-            }else{
+            }else if(!isFinished){
                 //游戏彻底结束
                 if(isGameOver){
                     lockCanvas.drawBitmap(gameoverbitmap,
@@ -839,6 +938,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
                     }
                 }
+            }else{
+                lockCanvas.drawBitmap(finishBitmap,0,0,null);
             }
 
             lockCanvas.restore();

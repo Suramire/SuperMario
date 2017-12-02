@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Fri Dec 01 15:46:10 CST 2017
+#Fri Dec 01 17:16:52 CST 2017
 25.file=D\:\\Android\\SuperMario\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex
 25.base=D\:\\Android\\SuperMario\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
 22.set=ANDROID_RESOURCE
