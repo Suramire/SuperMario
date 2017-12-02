@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -93,6 +94,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private boolean isFinished;
 	private boolean isThreadStop;
 	private boolean isTouchEnable;//标志是否响应触摸事件
+	private ArrayList<Bitmap> marioFireInvBitmaps;
+	private ArrayList<Bitmap> marioInvBitmaps;
+	private ArrayList<Bitmap> marioSmallInvBitmaps;
 	
 	public boolean isPause() {
         return isPause;
@@ -150,67 +154,72 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 			
 			if(!isLogo){
 				isLogo =true;
-				if(thread!=null){
+				isGameOver = false;
+				init();
+				if(isInited&&isThreadStop){
 					thread.start();
 				}
 				
-			}
-			
-			if(isGameOver){
-				lifeNumber = 3;
-				init();
-			}
-			else{
-
-				if(isShowCounter){
-					init();
-					if(isThreadStop){
+			}else{
+				if(isGameOver){
+					lifeNumber = 3;
+					isLogo = false;
+					waitAMoment();
+				}
+				else{
+					if(isShowCounter){
 						
-						thread.start();
+						init();
+						L.e("isInited" + isInited + " " + isThreadStop);
+						if(isInited&&isThreadStop){
+							thread.start();
+							
+						}
 						
-					}
-
-				}
-			}
-			
-			int pointCount = event.getPointerCount();
-			for (int i = 0; i < pointCount; i++) {
-				rectF.set(0,360*scaleY,60*scaleX,420*scaleY);
-				if(rectF.contains(event.getX(i),event.getY(i))){
-					//left running
-					mario.setMirror(true);
-					mario.setRunning(true);
-				}
-				
-				
-				rectF.set(120,360*scaleY,180*scaleX,420*scaleY);
-				if(rectF.contains(event.getX(i),event.getY(i))){
-					//right running
-					mario.setMirror(false);
-					mario.setRunning(true);
-				}
-				rectF.set(740,360*scaleY,800*scaleX,420*scaleY);
-				if(rectF.contains(event.getX(i),event.getY(i))){
-					//jump
-					if(!mario.isJumping()){
-						mario.setJumping(true);
-						speedY =-16;
 					}
 				}
 				
-				rectF.set(680,420*scaleY,740*scaleX,4800*scaleY);
-				if(rectF.contains(event.getX(i),event.getY(i))){
+				int pointCount = event.getPointerCount();
+				for (int i = 0; i < pointCount; i++) {
+					rectF.set(0,360*scaleY,60*scaleX,420*scaleY);
+					if(rectF.contains(event.getX(i),event.getY(i))){
+						//left running
+						mario.setMirror(true);
+						mario.setRunning(true);
+					}
+					
+					
+					rectF.set(120,360*scaleY,180*scaleX,420*scaleY);
+					if(rectF.contains(event.getX(i),event.getY(i))){
+						//right running
+						mario.setMirror(false);
+						mario.setRunning(true);
+					}
+					rectF.set(740,360*scaleY,800*scaleX,420*scaleY);
+					if(rectF.contains(event.getX(i),event.getY(i))){
+						//jump
+						if(!mario.isJumping()){
+							mario.setJumping(true);
+							speedY =-16;
+						}
+					}
+					
+					rectF.set(680,420*scaleY,740*scaleX,4800*scaleY);
+					if(rectF.contains(event.getX(i),event.getY(i))){
 
 //                L.e("mario.getY:" + mario.getY());
-					mario.fire();
-				}
-				//手指移开时停止移动
-				if(event.getAction() == MotionEvent.ACTION_UP){
-					//stop running
-					mario.setRunning(false);
-					performClick();
+						mario.fire();
+					}
+					//手指移开时停止移动
+					if(event.getAction() == MotionEvent.ACTION_UP){
+						//stop running
+						mario.setRunning(false);
+						performClick();
+					}
 				}
 			}
+			
+			
 		}
         
         return true;
@@ -347,8 +356,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private void myLogic() {
         //超时则死亡
         if(time<=0){
-            mario.setDead(true);
-	        isThreadStop = true;
+	        mario.setDead(true);
+	        isThreadStop = false;
 	        waitAMoment();
         }
 
@@ -357,11 +366,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             if(enemies!=null){
                 for (int i = 0; i < enemies.size(); i++) {
                     enemies.get(i).logic();
-                }
-            }
-            if(coins!=null){
-                for (int i = 0; i < coins.size(); i++) {
-                    coins.get(i).logic();
                 }
             }
             if(mario.getBullets()!=null){
@@ -378,65 +382,21 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                         if(item.isVisiable()){
                             item.logic();
                             //玛丽吃到道具(初始状态)
-                            if(item.collisionWith(mario)){
+                            if(!mario.isDead()&&item.collisionWith(mario)){
                                 //判断道具类型
                                 //蘑菇
-                                if(item instanceof Mushroom){
-                                    if(mario.getStatus()==0){
-                                        //取得原坐标并进行修正
-                                        int x = mario.getX();
-                                        int y = mario.getY()-20;
-	                                    boolean zeroDamage = mario.isZeroDamage();
-	                                    boolean invincible = mario.isInvincible();
-	                                    int invincibleTime = mario.getInvincibleTime();
-	                                    int zeroDamageTime = mario.getZeroDamageTime();
-	                                    //显示变大后的玛丽
-                                        mario = new Mario(32,62,marioBitmaps);
-	                                    mario.setInvincible(invincible);
-	                                    mario.setZeroDamage(zeroDamage);
-	
-	                                    if(zeroDamage){
-		                                    mario.setZeroDamageTime(zeroDamageTime);
-	                                    }
-	                                    if(invincible){
-		                                    mario.setInvincibleTime(invincibleTime);
-	                                    }
-                                        mario.setPosition(x,y);
-	                                    mario.setZeroDamage(zeroDamage);
-	                                    mario.setInvincible(invincible);
-                                        mario.setVisiable(true);
-                                        mario.setStatus(1);
+	                            int status = mario.getStatus();
+	                            if(item instanceof Mushroom){
+                                    if(status ==0){
+//                                        marioShapeShift(1);
+	                                    mario.shapeShift(1);
                                     }
                                 }else if(item instanceof Flower){
                                     //花
-                                    if(mario.getStatus()!=2){
+                                    if(status !=2){
                                         //非第三状态都执行
-                                        int x = mario.getX();
-                                        int y = 0;
-                                        if(mario.getStatus()==0){
-                                            y = mario.getY()-20;
-                                        }else{
-                                            y = mario.getY();
-                                        }
-                                        //显示变大后的玛丽
-	                                    boolean zeroDamage = mario.isZeroDamage();
-	                                    boolean invincible = mario.isInvincible();
-	                                    int invincibleTime = mario.getInvincibleTime();
-	                                    int zeroDamageTime = mario.getZeroDamageTime();
-	                                    
-                                        mario = new Mario(32,62,marioFireBitmaps);
-	                                    mario.setInvincible(invincible);
-	                                    mario.setZeroDamage(zeroDamage);
-	                                    if(zeroDamage){
-		                                    mario.setZeroDamageTime(zeroDamageTime);
-	                                    }
-	                                    if(invincible){
-		                                    mario.setInvincibleTime(invincibleTime);
-	                                    }
-	
-	                                    mario.setPosition(x,y);
-                                        mario.setVisiable(true);
-                                        mario.setStatus(2);
+//                                        marioShapeShift(2);
+	                                    mario.shapeShift(2);
                                         //设置弹夹
                                         List<Bullet> bullets = new ArrayList<Bullet>();
                                         for (int j = 0; j < 5; j++) {
@@ -453,7 +413,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 }else if(item instanceof Star){
                                     //玛丽吃到无敌星后变成无敌状态
                                     mario.setInvincible(true);
-	
 	                                // TODO: 2017/12/1 加音效
                                 }
                                 //吃到后蘑菇消失
@@ -469,7 +428,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             collisionWithMap();
             MushroomCollisionWithBrick();
             collisionWithEnemy();
-            collisionWithCoin();
             collisionWithBrick();
 
         }
@@ -501,24 +459,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
     }
 
-    /**
-     * 处理玛丽吃金币操作
-     */
-    private void collisionWithCoin() {
-        if(!mario.isDead()){
-            if(coins!=null){
-                for(int i=0;i<coins.size();i++){
-                    Coin coin = coins.get(i);
-                    //玛丽吃到可视状态的金币
-                    if(coin.isVisiable()&& mario.collisionWith(coin)){
-                        coin.setVisiable(false);
-                        updateScore(100);
-                    }
-                }
 
-            }
-        }
-    }
+    
 
     private void collisionWithEnemy() {
         if(!mario.isDead()){
@@ -536,58 +478,24 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                             updateScore(100);
                             speedY = -10;
                         }else{
-                            // TODO: 2017/12/1  状态变化时应有免伤时间
+
                             if(!mario.isZeroDamage()){
-	                            if(mario.getStatus()!=0){
-                                    mario.setStatus(mario.getStatus()-1);
-                                    switch (mario.getStatus()){
-                                        case 0:{
-                                            int x = mario.getX()-12;
-                                            int y = mario.getY()+42;
-	                                        boolean zeroDamage = mario.isZeroDamage();
-	                                        boolean invincible = mario.isInvincible();
-	                                        int invincibleTime = mario.getInvincibleTime();
-	                                        int zeroDamageTime = mario.getZeroDamageTime();
-	                                        //显示变大后的玛丽
-	                                        mario = new Mario(20, 20, marioSmallBitmaps);
-	                                        mario.setInvincible(invincible);
-	                                        mario.setZeroDamage(zeroDamage);
-	                                        if(zeroDamage){
-		                                        mario.setZeroDamageTime(zeroDamageTime);
-	                                        }
-	                                        if(invincible){
-		                                        mario.setInvincibleTime(invincibleTime);
-	                                        }
-                                            mario.setZeroDamage(true);
-                                            mario.setVisiable(true);
-                                            mario.setPosition(x,y);
-                                        }break;
-                                        case 1:{
-                                            int x = mario.getX();
-                                            int y = mario.getY();
-	                                        boolean zeroDamage = mario.isZeroDamage();
-	                                        boolean invincible = mario.isInvincible();
-	                                        int invincibleTime = mario.getInvincibleTime();
-	                                        int zeroDamageTime = mario.getZeroDamageTime();
-	                                        //显示变大后的玛丽
-	                                        mario = new Mario(32,62,marioBitmaps);
-	                                        mario.setInvincible(invincible);
-	                                        mario.setZeroDamage(zeroDamage);
-	                                        mario.setStatus(1);
-	                                        if(zeroDamage){
-		                                        mario.setZeroDamageTime(zeroDamageTime);
-	                                        }
-	                                        if(invincible){
-		                                        mario.setInvincibleTime(invincibleTime);
-	                                        }
-                                            mario.setVisiable(true);
-                                            mario.setZeroDamage(true);
-                                            mario.setPosition(x,y);
-                                        }break;
+	                            int status = mario.getStatus();
+	                            if(status !=0){
+                                    switch (status){
+	                                    case  1:{
+//	                                    	marioShapeShift(0);
+		                                    mario.shapeShift(0);
+	                                    }break;
+	                                    case 2:{
+//	                                    	marioShapeShift(1);
+		                                    mario.shapeShift(1);
+	                                    }break;
                                     }
+		                            mario.setZeroDamage(true);
                                 }else{
                                     mario.setDead(true);
-                                    isThreadStop = true;
+                                    isThreadStop = false;
                                     speedY = -16;
 		                            waitAMoment();
                                 }
@@ -605,7 +513,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				SystemClock.sleep(3000);
+				SystemClock.sleep(2000);
 				isTouchEnable = true;
 			}
 		}).start();
@@ -672,26 +580,19 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 }else if(tiledLayer_peng01.getX()>800-tiledLayer_peng01.getCols()
                 		*tiledLayer_peng01.getWidth()){
                     tiledLayer_peng01.move(-4, 0);
-//                	tiledLayer_peng01.move(-4, 0);
-//                	tiledLayer_zhebi01.move(-4, 0);
                     //到达地图边界 人物移动
                     if(enemies!=null){
                     	for (int i = 0; i < enemies.size(); i++) {
                     		enemies.get(i).move(-4, 0);
             			}
                     }
-                    if(coins!=null){
-                        for (int i = 0; i < coins.size(); i++) {
-                            coins.get(i).move(-4,0);
-                        }
-                    }
                     if(bricks!=null){
                         for (int i = 0; i < bricks.size(); i++) {
                             Brick brick = bricks.get(i);
                             brick.move(-4,0);
-                            MySprite mushroom = brick.getItem();
-                            if(mushroom!=null && mushroom.isVisiable()){
-                                mushroom.move(-4,0);
+                            MySprite item = brick.getItem();
+                            if(item!=null && item.isVisiable()){
+                                item.move(-4,0);
                             }
 
                         }
@@ -706,11 +607,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     	}
 	
 	    if(mario.getY()>400){
-		    L.e("fall:"+mario.isDead());
 		    //2 再次落下才表示游戏结束
 		    if(!mario.isDead()){
 			    mario.setDead(true);
-			    isThreadStop = true;
+			    isThreadStop = false;
 			    speedY = -16;
 			    waitAMoment();
 		    }else{
@@ -731,14 +631,14 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     }
 
     private void init() {
-	    isThreadStop = false;
+	    isThreadStop = true;
         isFinished = false;
-        time = 6*60;
+        time = 6*100;
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
             	//当显示过开场图片并且时间不为负数且线程停止标志位不为真时
-                while (!isThreadStop&& time > 0 && isLogo) {
+                while (isThreadStop&& time > 0 && isLogo) {
                     SystemClock.sleep(1000);
                     time--;
                 }
@@ -764,6 +664,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
         marioSmallBitmaps = new ArrayList<Bitmap>();
         marioFireBitmaps = new ArrayList<Bitmap>();
+        marioFireInvBitmaps = new ArrayList<Bitmap>();
+        marioSmallInvBitmaps = new ArrayList<Bitmap>();
+        marioInvBitmaps = new ArrayList<Bitmap>();
 
 
         marioBitmaps = new ArrayList<Bitmap>();
@@ -771,7 +674,11 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             marioBitmaps.add(getBitmap("mario/mario"+i+".png"));
             marioSmallBitmaps.add(getBitmap("mario/mario_small_"+i+".png"));
             marioFireBitmaps.add(getBitmap("mario/mario_fire_"+i+".png"));
+            marioFireInvBitmaps.add(getBitmap("mario/mario_fire_invincible_"+i+".png"));
+            marioSmallInvBitmaps.add(getBitmap("mario/mario_small_invincible_"+i+".png"));
+	        marioInvBitmaps.add(getBitmap("mario/mario_invincible_"+i+".png"));
         }
+        
         bitmaps2 = new ArrayList<Bitmap>();
         for (int i = 0; i < 3; i++) {
             bitmaps2.add(getBitmap("enemy/enemy"+i+".png"));
@@ -839,7 +746,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         isEnemyShown3 = false;
 
         mPaint = new Paint();
-        score = (Integer) SPUtils.get(context,"hiscore",0);
+	    mPaint.setTextSize(20);//设置字号
+	    mPaint.setColor(Color.WHITE);//画笔颜色
+        mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(),"font/Bit8.ttf"));//加载字体文件
+        score = (Integer) SPUtils.get(context,"hiscore",0);//设置画笔字体
 
 
         //碰撞层
@@ -852,7 +762,15 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 		tiledLayer_peng01.setTiledCell(map_peng01);
 
         isInited = true;
-
+		List<List<Bitmap>> bitmapsList = new ArrayList<List<Bitmap>>();
+	    bitmapsList.add(marioSmallBitmaps);
+	    bitmapsList.add(marioBitmaps);
+	    bitmapsList.add(marioFireBitmaps);
+	    bitmapsList.add(marioSmallInvBitmaps);
+	    bitmapsList.add(marioInvBitmaps);
+	    bitmapsList.add(marioFireInvBitmaps);
+	    mario.setBitmapsList(bitmapsList);
+		
 
     }
     private void myDraw() {
@@ -861,8 +779,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             lockCanvas.save();
             lockCanvas.scale(scaleX, scaleY);
             lockCanvas.drawColor(Color.BLACK);
-            mPaint.setTextSize(20);
-            mPaint.setColor(Color.WHITE);
             if(!isLogo){
                 lockCanvas.drawBitmap(logoBitmap,0,0,null);
             }else if(!isFinished){
@@ -878,7 +794,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 240-marioBitmap.getHeight(),null);
                         lockCanvas.drawText(String.format(Locale.CHINA,"X %02d",lifeNumber),
                                 440-marioBitmap.getWidth(),
-                                280-marioBitmap.getHeight(),mPaint);
+                                285-marioBitmap.getHeight(),mPaint);
+                        lockCanvas.drawText("单击屏幕继续",350,300,mPaint);
 
                     }else{
 //                        tiledLayer_back01.draw(lockCanvas);
@@ -891,21 +808,12 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                         }
 
                         mario.draw(lockCanvas);
-                        if(scoreString!=null){
-                            lockCanvas.drawText(scoreString,mario.getX()+30,mario.getY()-20-3*delay,mPaint);
-                            if(delay++==7){
-                                scoreString=null;
-                                delay=0;
-                            }
-
-                        }
-//                        tiledLayer_zhebi01.draw(lockCanvas);
                         lockCanvas.drawBitmap(aBitmap, 680, 420, null);
                         lockCanvas.drawBitmap(bBitmap, 740, 360, null);
                         lockCanvas.drawBitmap(downBitmap, 60, 420, null);
                         lockCanvas.drawBitmap(leftBitmap, 0, 360, null);
                         lockCanvas.drawBitmap(rightBitmap, 120, 360, null);
-
+                        //绘制砖块
                         if(bricks!=null){
                             for (int i = 0; i < bricks.size(); i++) {
                                 Brick brick = bricks.get(i);
@@ -919,23 +827,24 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 }
                             }
                         }
-
-                        if(coins!=null){
-                            for (int i = 0; i < coins.size(); i++) {
-                                coins.get(i).draw(lockCanvas);
-                            }
-                        }
-                        //绘制分数
-                        lockCanvas.drawText(String.format(Locale.CHINA,"%06d",score),20,20,mPaint);
+                        
+	                    //绘制单次得分
+	                    if(scoreString!=null){
+		                    lockCanvas.drawText(scoreString,mario.getX()+25,mario.getY()-20-3*delay,mPaint);
+		                    if(delay++==15){
+			                    scoreString=null;
+			                    delay=0;
+		                    }
+	                    }
+                        //绘制总分数
+                        lockCanvas.drawText(String.format(Locale.CHINA,"SCORE:%06d",score),30,30,mPaint);
                         if(mario.getBullets()!=null){
                             for (int i = 0; i < mario.getBullets().size(); i++) {
                                 mario.getBullets().get(i).draw(lockCanvas);
                             }
                         }
-                        //绘制时间
-                        lockCanvas.drawText(String.valueOf(time),750,20,mPaint);
-
-
+                        //绘制剩余时间
+                        lockCanvas.drawText(String.format(Locale.CHINA,"TIME:%03d",time),700,30,mPaint);
                     }
                 }
             }else{
@@ -1205,4 +1114,5 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         }
 
     }
+	
 }

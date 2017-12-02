@@ -2,21 +2,26 @@ package com.suramire.androidgame25;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.SystemClock;
+
+import com.suramire.androidgame25.util.L;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Suramire on 2017/11/9.
+ * 玛丽类 实现无敌与免伤状态
  */
 
 public class Mario extends Sprite {
 	
-	private final Thread invincibleThread;
-	private final Thread zeroDamagThread;
 	//region Fields
-    private boolean isMirror;//是否翻转
+	private final Thread invincibleThread;//无敌倒计时线程
+	private final Thread zeroDamagThread;//免伤倒计时线程
+	private final Paint paint;
+	private boolean isMirror;//是否翻转
     private boolean isRunning;//是否跑动
     private boolean isJumping;//是否跳跃
     private boolean isDead;//是否死亡
@@ -25,15 +30,24 @@ public class Mario extends Sprite {
     private boolean isZeroDamage;//标志是否处于免伤状态
     private int invincibleTime;//无敌时间
     private int zeroDamageTime;//免伤时间
-	private boolean isInvincibleStop;
-	private boolean isZeroDamageStop;
-	private boolean isInvincibleThreadStarted;
-	private boolean isZeroDamageThreadStarted;
+	private boolean isInvincibleThreadStarted;//标志进程是否开始
+	private boolean isZeroDamageThreadStarted;//标志进程是否开始
     List<Bullet> bullets;
-    private int delay;
+	List<List<Bitmap>> bitmapsList;
+	
+
+	
+	private int delay;
 	//endregion
 
     //region Getter & Setter
+    public List<List<Bitmap>> getBitmapsList() {
+	    return bitmapsList;
+    }
+	
+	public void setBitmapsList(List<List<Bitmap>> bitmapsList) {
+		this.bitmapsList = bitmapsList;
+	}
 	
 	public int getInvincibleTime() {
 		return invincibleTime;
@@ -49,22 +63,6 @@ public class Mario extends Sprite {
 	
 	public void setZeroDamageTime(int zeroDamageTime) {
 		this.zeroDamageTime = zeroDamageTime;
-	}
-	
-	public boolean isInvincibleStop() {
-		return isInvincibleStop;
-	}
-	
-	public void setInvincibleStop(boolean invincibleStop) {
-		isInvincibleStop = invincibleStop;
-	}
-	
-	public boolean isZeroDamageStop() {
-		return isZeroDamageStop;
-	}
-	
-	public void setZeroDamageStop(boolean zeroDamageStop) {
-		isZeroDamageStop = zeroDamageStop;
 	}
 	
 	public boolean isZeroDamage() {
@@ -83,10 +81,12 @@ public class Mario extends Sprite {
 	}
 	
 	public void setInvincible(boolean invincible) {
+		isInvincible = invincible;
 		if(invincible){
 			invincibleTime = 10;
 		}
-		isInvincible = invincible;
+		shapeShift(getStatus());
+		
 	}
 
     public List<Bullet> getBullets() {
@@ -138,9 +138,7 @@ public class Mario extends Sprite {
 		}
 	}
     //endregion
-
-
-
+	
     public Mario(int width, int height, List<Bitmap> bitmaps) {
         super(width, height, bitmaps);
 	    invincibleThread = new Thread(new Runnable() {
@@ -162,6 +160,54 @@ public class Mario extends Sprite {
 			
 		    }
 	    });
+	    paint = new Paint();
+	    paint.setAlpha(128);
+    }
+	
+	
+	public void shapeShift(){
+		shapeShift(getStatus());
+	}
+ 
+	/**
+	 * 状态变化(变身)
+	 * @param targetStatus 目标状态
+	 */
+    public void shapeShift(int targetStatus){
+	    int value =0;
+	    
+    	if(isInvincible()){
+    		value=3;
+	    }
+	    List<Bitmap> bitmaps = bitmapsList.get(targetStatus+value);
+	    Bitmap bitmap = bitmaps.get(0);
+	    int width = bitmap.getWidth();
+	    int height = bitmap.getHeight();
+	    setWidth(width);
+	    setHeight(height);
+	    setBitmaps(bitmaps);
+
+	    int[] temp = new int[bitmaps.size()];
+	    for (int i = 0; i < temp.length; i++) {
+		    temp[i] = i;
+	    }
+	    setmFrameSequence(temp);
+	    //状态变化才修正坐标
+	    if(targetStatus!=getStatus()){
+		    //坐标修正
+		    int y = 0;
+		    if(getWidth()>width){
+		    	y =getY()+42;
+		    }else if(getWidth()<width){
+		    	y =getY()-42;
+		    }else{
+		    	y = getY();
+		    }
+		    setPosition(getX(),y);
+		    setStatus(targetStatus);
+	    }
+	    
+	    
     }
 
     @Override
@@ -172,13 +218,13 @@ public class Mario extends Sprite {
 		        isInvincibleThreadStarted = true;
 	        }
 	        if(invincibleTime<=0){
-        		isInvincible = false;
+        		setInvincible(false);
 		        isInvincibleThreadStarted = false;
 	        }
         }
         if(isZeroDamage()){
         	if(!isZeroDamageThreadStarted){
-        		zeroDamagThread.start();
+        		new Thread(zeroDamagThread).start();
 		        isZeroDamageThreadStarted = true;
 	        }
 	        if(zeroDamageTime<=0){
@@ -205,7 +251,7 @@ public class Mario extends Sprite {
     }
 
     public void fire(){
-        if(bullets!=null){
+        if(!isDead()&&getStatus()==2&&bullets!=null){
             for (int i = 0; i < bullets.size(); i++) {
                 Bullet bullet = bullets.get(i);
                 if(!bullet.isVisiable()&&delay++>10){
@@ -225,14 +271,23 @@ public class Mario extends Sprite {
     public void draw(Canvas canvas) {
         if(isMirror()){
             canvas.save();
-            //翻转画布 相当于翻转人物
-            canvas.scale(-1,1,getX()+getWidth()/2,getY()+getHeight()/2);
-            super.draw(canvas);
+	        //翻转画布 相当于翻转人物
+	        canvas.scale(-1,1,getX()+getWidth()/2,getY()+getHeight()/2);
+            if(isZeroDamage()){
+	            super.draw(canvas,paint);
+            }else{
+	            super.draw(canvas);
+            }
             canvas.restore();
         }else{
-            super.draw(canvas);
+	        if(isZeroDamage()){
+		        super.draw(canvas,paint);
+	        }else{
+		        super.draw(canvas);
+	        }
         }
     }
+	
 
     @Override
     protected void outOfBounds() {

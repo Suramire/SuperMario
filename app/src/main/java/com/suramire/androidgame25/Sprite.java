@@ -2,6 +2,7 @@ package com.suramire.androidgame25;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 import java.util.List;
@@ -27,11 +28,17 @@ public class Sprite {
     private Rect mDest;
     private Rect mSrc;
     private List<Bitmap> mBitmaps;
-
-
-    //endregion
+	
+	//endregion
 
     //region Getter and Setter
+    public List<Bitmap> getBitmaps() {
+	    return mBitmaps;
+    }
+	
+	public void setBitmaps(List<Bitmap> mBitmaps) {
+		this.mBitmaps = mBitmaps;
+	}
     public int[] getmFrameSequence() {
 		return mFrameSequence;
 	}
@@ -101,7 +108,6 @@ public class Sprite {
 
 
     public Sprite(int width, int height, List<Bitmap> bitmaps) {
-        super();
         mWidth = width;
         mHeight = height;
         mBitmaps = bitmaps;
@@ -152,26 +158,34 @@ public class Sprite {
     }
 
     public void draw(Canvas canvas){
-        if(isVisiable()){
-            //采用切图方式
-            if(mBitmap!=null){
-                int x = mFrameX[mFrameSequence[mFrameSequenceIndex]];
-                int y = mFrameY[mFrameSequence[mFrameSequenceIndex]];
-                mSrc.set(x, y, x + getWidth(), y + getHeight());
-                mDest.set(getX(),getY(),getX()+getWidth(),getY()+getHeight());
-                canvas.drawBitmap(mBitmap, mSrc, mDest, null);
-            }else{
-                canvas.drawBitmap(mBitmaps.get(mFrameSequence[mFrameSequenceIndex]),
-                        getX(),getY(),null);
-            }
-
-
-        }
+        draw(canvas,null);
     }
-
+    
+    public void draw(Canvas canvas,Paint paint){
+	    if(isVisiable()) {
+		    //采用切图方式
+		    if (mBitmap != null) {
+			    int x = mFrameX[mFrameSequence[mFrameSequenceIndex]];
+			    int y = mFrameY[mFrameSequence[mFrameSequenceIndex]];
+			    mSrc.set(x, y, x + getWidth(), y + getHeight());
+			    mDest.set(getX(), getY(), getX() + getWidth(), getY() + getHeight());
+			    canvas.drawBitmap(mBitmap, mSrc, mDest, paint);
+		    } else {
+		    	//采用单帧贴图
+			    canvas.drawBitmap(mBitmaps.get(mFrameSequence[mFrameSequenceIndex]),
+					    getX(), getY(), paint);
+		    }
+	    }
+    }
+	
+	/**
+	 * 自身逻辑
+	 */
     public void logic(){
     }
-
+	/**
+	 * 边界处理
+	 */
     protected void outOfBounds() {
 
     }
