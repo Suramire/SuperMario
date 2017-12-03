@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "D:\\Android\\SuperMario\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+        "outputFile": "/Users/suramire/Desktop/SuperMario/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values/values.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,92 @@
                     "endOffset": 98
                 },
                 "from": {
-                    "file": "D:\\Android\\SuperMario\\app\\src\\main\\res\\values\\strings.xml",
+                    "file": "/Users/suramire/Desktop/SuperMario/app/src/main/res/values/strings.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 56,
+                        "endColumn": 47,
+                        "endOffset": 99
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 103,
+                    "endColumn": 52,
+                    "endOffset": 151
+                },
+                "from": {
+                    "file": "/Users/suramire/Desktop/SuperMario/app/src/main/res/values/strings.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 104,
+                        "endColumn": 52,
+                        "endOffset": 152
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 156,
+                    "endLine": 10,
+                    "endColumn": 12,
+                    "endOffset": 442
+                },
+                "from": {
+                    "file": "/Users/suramire/Desktop/SuperMario/app/src/main/res/values/styles.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 186,
+                        "endLine": 12,
+                        "endColumn": 12,
+                        "endOffset": 472
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 11,
+                    "startColumn": 4,
+                    "startOffset": 447,
+                    "endLine": 13,
+                    "endColumn": 12,
+                    "endOffset": 602
+                },
+                "from": {
+                    "file": "/Users/suramire/Desktop/SuperMario/app/src/main/res/values/styles.xml",
+                    "position": {
+                        "startLine": 15,
+                        "startColumn": 4,
+                        "startOffset": 510,
+                        "endLine": 17,
+                        "endColumn": 12,
+                        "endOffset": 665
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "outputFile": "/Users/suramire/Desktop/SuperMario/D:\\Android\\SuperMario\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 47,
+                    "endOffset": 98
+                },
+                "from": {
+                    "file": "/Users/suramire/Desktop/SuperMario/D:\\Android\\SuperMario\\app\\src\\main\\res\\values\\strings.xml",
                     "position": {
                         "startLine": 3,
                         "startColumn": 4,
@@ -30,7 +115,7 @@
                     "endOffset": 151
                 },
                 "from": {
-                    "file": "D:\\Android\\SuperMario\\app\\src\\main\\res\\values\\strings.xml",
+                    "file": "/Users/suramire/Desktop/SuperMario/D:\\Android\\SuperMario\\app\\src\\main\\res\\values\\strings.xml",
                     "position": {
                         "startLine": 4,
                         "startColumn": 4,
@@ -50,7 +135,7 @@
                     "endOffset": 442
                 },
                 "from": {
-                    "file": "D:\\Android\\SuperMario\\app\\src\\main\\res\\values\\styles.xml",
+                    "file": "/Users/suramire/Desktop/SuperMario/D:\\Android\\SuperMario\\app\\src\\main\\res\\values\\styles.xml",
                     "position": {
                         "startLine": 6,
                         "startColumn": 4,
@@ -71,7 +156,7 @@
                     "endOffset": 602
                 },
                 "from": {
-                    "file": "D:\\Android\\SuperMario\\app\\src\\main\\res\\values\\styles.xml",
+                    "file": "/Users/suramire/Desktop/SuperMario/D:\\Android\\SuperMario\\app\\src\\main\\res\\values\\styles.xml",
                     "position": {
                         "startLine": 15,
                         "startColumn": 4,

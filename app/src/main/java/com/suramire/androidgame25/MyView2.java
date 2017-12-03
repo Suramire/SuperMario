@@ -97,7 +97,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 	private ArrayList<Bitmap> marioFireInvBitmaps;
 	private ArrayList<Bitmap> marioInvBitmaps;
 	private ArrayList<Bitmap> marioSmallInvBitmaps;
-	
+	private Bitmap coinBitmap;
+    private int coinNumber;
+
 	public boolean isPause() {
         return isPause;
     }
@@ -149,6 +151,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 		if(isTouchEnable){
 			if(isFinished){
 				isFinished=false;
+				isLogo = false;
+				waitAMoment();
 				init();
 			}
 			
@@ -414,6 +418,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                     //玛丽吃到无敌星后变成无敌状态
                                     mario.setInvincible(true);
 	                                // TODO: 2017/12/1 加音效
+                                }else if(item instanceof Coin){
+                                    coinNumber++;
                                 }
                                 //吃到后蘑菇消失
                                 item.setVisiable(false);
@@ -661,8 +667,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         Bitmap flowerBitmap = getBitmap("item/flower.png");
         Bitmap starBitmap = getBitmap("item/object_star.png");
         fireBallBitmap = getBitmap("item/object_fireball.png");
+		coinBitmap = getBitmap("coin/coin3.png");
 
-        marioSmallBitmaps = new ArrayList<Bitmap>();
+		marioSmallBitmaps = new ArrayList<Bitmap>();
         marioFireBitmaps = new ArrayList<Bitmap>();
         marioFireInvBitmaps = new ArrayList<Bitmap>();
         marioSmallInvBitmaps = new ArrayList<Bitmap>();
@@ -843,6 +850,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 mario.getBullets().get(i).draw(lockCanvas);
                             }
                         }
+                        //绘制金币数
+                        lockCanvas.drawBitmap(coinBitmap,300,0,null);
+                        lockCanvas.drawText(String.format(Locale.CHINA,"x %02d",coinNumber),340,30,mPaint);
                         //绘制剩余时间
                         lockCanvas.drawText(String.format(Locale.CHINA,"TIME:%03d",time),700,30,mPaint);
                     }
