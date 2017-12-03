@@ -3,6 +3,8 @@ package com.suramire.androidgame25;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
+import com.suramire.androidgame25.enums.Site;
+
 import java.util.List;
 
 /**

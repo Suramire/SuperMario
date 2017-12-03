@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
 
 import com.suramire.androidgame25.util.L;
 
@@ -29,6 +30,7 @@ public class MainActivity extends Activity {
                 .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                    	setContentView(new View(MainActivity.this));
                         finish();
                     }
                 })

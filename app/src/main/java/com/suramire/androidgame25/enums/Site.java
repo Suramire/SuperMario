@@ -1,4 +1,4 @@
-package com.suramire.androidgame25;
+package com.suramire.androidgame25.enums;
 
 /**
  * Created by Suramire on 2017/11/11.

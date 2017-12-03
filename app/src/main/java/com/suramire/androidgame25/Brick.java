@@ -2,6 +2,8 @@ package com.suramire.androidgame25;
 
 import android.graphics.Bitmap;
 
+import com.suramire.androidgame25.enums.ItemType;
+import com.suramire.androidgame25.enums.Site;
 import com.suramire.androidgame25.item.Coin;
 import com.suramire.androidgame25.item.Flower;
 import com.suramire.androidgame25.item.Mushroom;

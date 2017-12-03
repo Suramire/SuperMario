@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.SystemClock;
 
+import com.suramire.androidgame25.enums.Site;
 import com.suramire.androidgame25.util.L;
 
 import java.util.ArrayList;
@@ -85,7 +86,7 @@ public class Mario extends Sprite {
 		if(invincible){
 			invincibleTime = 10;
 		}
-		shapeShift(getStatus());
+		shapeShift();
 		
 	}
 
@@ -174,8 +175,8 @@ public class Mario extends Sprite {
 	 * @param targetStatus 目标状态
 	 */
     public void shapeShift(int targetStatus){
+    	
 	    int value =0;
-	    
     	if(isInvincible()){
     		value=3;
 	    }
@@ -183,6 +184,20 @@ public class Mario extends Sprite {
 	    Bitmap bitmap = bitmaps.get(0);
 	    int width = bitmap.getWidth();
 	    int height = bitmap.getHeight();
+	    //状态变化才修正坐标
+	    if(targetStatus!=getStatus()){
+		    //坐标修正
+		    int y;
+		    if(getWidth()>width){
+			    y =getY()+42;
+		    }else if(getWidth()<width){
+			    y =getY()-42;
+		    }else{
+			    y = getY();
+		    }
+		    setPosition(getX(),y);
+		    setStatus(targetStatus);
+	    }
 	    setWidth(width);
 	    setHeight(height);
 	    setBitmaps(bitmaps);
@@ -192,20 +207,7 @@ public class Mario extends Sprite {
 		    temp[i] = i;
 	    }
 	    setmFrameSequence(temp);
-	    //状态变化才修正坐标
-	    if(targetStatus!=getStatus()){
-		    //坐标修正
-		    int y = 0;
-		    if(getWidth()>width){
-		    	y =getY()+42;
-		    }else if(getWidth()<width){
-		    	y =getY()-42;
-		    }else{
-		    	y = getY();
-		    }
-		    setPosition(getX(),y);
-		    setStatus(targetStatus);
-	    }
+	    
 	    
 	    
     }
@@ -256,7 +258,7 @@ public class Mario extends Sprite {
                 Bullet bullet = bullets.get(i);
                 if(!bullet.isVisiable()&&delay++>10){
                     bullet.setPosition(getX()+getWidth()/2,getY()+getHeight()/2);
-                    bullet.setDirection(isMirror?Site.左:Site.右);
+                    bullet.setDirection(isMirror? Site.左:Site.右);
                     bullet.setVisiable(true);
                     bullet.setSpeedY(-4);
                     bullet.setJumping(true);
