@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.os.SystemClock;
 
 import com.suramire.androidgame25.enums.Site;
-import com.suramire.androidgame25.util.L;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -257,7 +256,7 @@ public class Mario extends Sprite {
             for (int i = 0; i < bullets.size(); i++) {
                 Bullet bullet = bullets.get(i);
                 if(!bullet.isVisiable()&&delay++>10){
-                    bullet.setPosition(getX()+getWidth()/2,getY()+getHeight()/2);
+                    bullet.setPosition(getX()+getWidth()/2,getY()+getHeight()/4);
                     bullet.setDirection(isMirror? Site.左:Site.右);
                     bullet.setVisiable(true);
                     bullet.setSpeedY(-4);
@@ -408,21 +407,20 @@ public class Mario extends Sprite {
                 if(collisionWith(sprite)
                         && sy > y
                         && h >=sy-y
-                        && x+w/4>=sx
-                        && x+w/4 <=sx+sw
+                        && x+w/2>=sx
+                        && x+w/2 <=sx+sw
                         ){
-//                    Log.e("MyView2", "y:" + y+" h:"+h + " sy:"+sy +" sh:"+sh +" x:"+x+" sx:"+sx +" w:"+w+ " sw:"+sw);
                     return true;
                 }
             }break;
             case 上:{
 
                 if(collisionWith(sprite)
+                        && sy < y
                         && sy + sh >= y //砖块高于玛丽最多一行高度
-                        && x + w /4>= sx//玛丽右3/4宽度可以顶砖块
-                        && x + w /4<= sx + sw//玛丽左3/4宽度可以顶砖块
+                        && x + w /2>= sx//玛丽右1/2宽度可以顶砖块
+                        && x + w /2<= sx + sw//玛丽左1/2宽度可以顶砖块
                         ){
-//                    Log.e("MyView2", "y:" + y+" h:"+h + " sy:"+sy +" sh:"+sh +" x:"+x+" sx:"+sx +" w:"+w+ " sw:"+sw);
                     return true;
                 }
             }break;

@@ -17,14 +17,14 @@ import java.util.List;
 
 public class Brick extends Sprite {
     //表示道具类型 枚举
-    private ItemType itemType;
-    private MySprite item;
+    protected ItemType itemType;
+    protected MySprite item;
     //标志道具是否已显示
-    private  boolean hasItem;
+    protected boolean hasItem;
     //标志砖块是否是上下移动状态
-    private boolean isJumping;
+    protected boolean isJumping;
     //上下移动的速度
-    private int speedY;
+    protected int speedY;
 
     //region Getter&Setter
     public ItemType getItemType() {
@@ -101,7 +101,7 @@ public class Brick extends Sprite {
                 case Mushroom:{
                     //蘑菇默认往右移动
                     item = new Mushroom(bitmap);
-                    this.item.setDirection(Site.右);
+                    this.item.setDirection(Site.上);
                 }break;
                 case Coin:{
 

@@ -17,6 +17,20 @@ ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:2:1-28:12
 		ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:2:11-69
 uses-sdk
 ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:7:5-9:41
+MERGED from [com.android.support:design:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\design\26.0.0-alpha1\AndroidManifest.xml:21:5-23:62
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-v4\26.0.0-alpha1\AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-compat\26.0.0-alpha1\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\26.0.0-alpha1\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\26.0.0-alpha1\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\26.0.0-alpha1\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-fragment\26.0.0-alpha1\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\26.0.0-alpha1\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\26.0.0-alpha1\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\26.0.0-alpha1\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\26.0.0-alpha1\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:transition:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\transition\26.0.0-alpha1\AndroidManifest.xml:20:5-44
+	tools:overrideLibrary
+		ADDED from [com.android.support:design:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\design\26.0.0-alpha1\AndroidManifest.xml:23:9-59
 	android:targetSdkVersion
 		ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:9:9-38
 		INJECTED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml
@@ -27,6 +41,17 @@ ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:7:5-9:41
 		INJECTED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml
 application
 ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:11:1-26:19
+MERGED from [com.android.support:design:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\design\26.0.0-alpha1\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-v4\26.0.0-alpha1\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-compat\26.0.0-alpha1\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\26.0.0-alpha1\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\26.0.0-alpha1\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\26.0.0-alpha1\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-fragment\26.0.0-alpha1\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\26.0.0-alpha1\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\26.0.0-alpha1\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\26.0.0-alpha1\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:transition:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\transition\26.0.0-alpha1\AndroidManifest.xml:26:5-20
 	android:label
 		ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:14:9-41
 	android:allowBackup
@@ -34,7 +59,7 @@ ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:11:1-26:19
 	android:icon
 		ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:13:9-39
 	android:theme
-		ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:15:9-73
+		ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:15:9-40
 activity#com.suramire.androidgame25.MainActivity
 ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:16:9-25:20
 	android:screenOrientation
@@ -53,3 +78,20 @@ category#android.intent.category.LAUNCHER
 ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:23:17-77
 	android:name
 		ADDED from D:\Android\SuperMario\app\src\main\AndroidManifest.xml:23:27-74
+meta-data#android.support.VERSION
+ADDED from [com.android.support:design:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\design\26.0.0-alpha1\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-v4\26.0.0-alpha1\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-compat\26.0.0-alpha1\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\26.0.0-alpha1\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\26.0.0-alpha1\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\26.0.0-alpha1\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-fragment\26.0.0-alpha1\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\26.0.0-alpha1\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\26.0.0-alpha1\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\26.0.0-alpha1\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:recyclerview-v7:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\26.0.0-alpha1\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:transition:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\transition\26.0.0-alpha1\AndroidManifest.xml:22:5-24:41
+	android:value
+		ADDED from [com.android.support:design:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\design\26.0.0-alpha1\AndroidManifest.xml:27:9-38
+	android:name
+		ADDED from [com.android.support:design:26.0.0-alpha1] D:\Android\SuperMario\app\build\intermediates\exploded-aar\com.android.support\design\26.0.0-alpha1\AndroidManifest.xml:26:9-47

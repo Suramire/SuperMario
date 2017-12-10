@@ -84,7 +84,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private boolean isInited;
     private String scoreString;
     private int delay;
-    private boolean isLogo;
     private Bitmap logoBitmap;
     private List<Brick> bricks;
     private List<Bitmap> marioBitmaps;
@@ -94,7 +93,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private Thread thread;
     private List<Bitmap> marioSmallBitmaps;
     private Bitmap finishBitmap;
-    private boolean isFinished;
 	private boolean threadRunning;
 	private boolean isTouchEnable;//标志是否响应触摸事件
 	private ArrayList<Bitmap> marioFireInvBitmaps;
@@ -103,15 +101,21 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 	private Bitmap coinBitmap;
     private int coinNumber;
     private GameState gameState;//表示当前游戏状态
-	private int stateDelay_timeup;
+	private int stateDelay_timeup;//状态切换间的延迟
 	private int stateDelay_lifecounter;
 	private int stateDelay_finish;
 	private int stateDelay_logo;
 	private int stateDelay_gameover;
 	private boolean isFirstRun;
 	private boolean isMaioDieSoundPlayed;
+    private List<CommonBrick> commonBricks;
+    private TiledLayer tiledLayer_cover;
+    private Bitmap cannonBitmap;
+    private Bitmap enemyBulletBitmap;
+    private List<Bitmap> cannonBitmaps;
+    private Cannon cannon;
 
-	public boolean isPause() {
+    public boolean isPause() {
         return isPause;
     }
 
@@ -269,92 +273,185 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
     private  int[][] getMapArray(){
         return new int[][]{
-		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0 },
-		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0 },
-		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 31, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 27, 27, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0 },
-		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0 },
-		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0 },
-		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 31, 0, 31, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 31, 31, 31, 31, 31, 31, 31, 31, 0, 0, 0, 0,
-				        0, 0, 0, 0, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0 },
-		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 31, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 41,
-				        42, 43, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0 },
-		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35,
-				        0, 0, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 46,
-				        47, 48, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0 },
-		        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40,
-				        0, 27, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 51,
-				        52, 53, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				        0, 0, 0, 0 },
-		        { 26, 26, 26, 26, 26, 26, 26, 26, 0, 26, 26, 26, 26, 26, 26, 26,
-				        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-				        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-				        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-				        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-				        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-				        26, 26, 26, 26 },
-		        { 30, 30, 30, 30, 30, 30, 30, 30, 0, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30 },
-		        { 30, 30, 30, 30, 30, 30, 30, 30, 0, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-				        30, 30, 30, 30 }
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35,
+                    0, 0, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40,
+                    0, 27, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0 },
+            { 26, 26, 26, 26, 26, 26, 26, 26, 0, 26, 26, 26, 26, 26, 26, 26,
+                    26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+                    26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+                    26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+                    26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+                    26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+                    26, 26, 26, 26 },
+            { 30, 30, 30, 30, 30, 30, 30, 30, 0, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30 },
+            { 30, 30, 30, 30, 30, 30, 30, 30, 0, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                    30, 30, 30, 30 }
         };
     }
+
+    private  int[][] getMapCoverArray(){
+        return new int[][]{
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41,
+                        42, 43, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 9, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46,
+                        47, 48, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17,
+                        18, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 12, 13, 14, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51,
+                        52, 53, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 }
+        };
+    }
+
+
+
+
 
     //endregion
 
@@ -362,14 +459,86 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     	switch (gameState){
 		    case GAMING:{
 
-//			    L.e("threadRunning:" + threadRunning + " isInited:" + isInited);
 			    if(!threadRunning&&isInited){
+
 				    thread.start();
 				    threadRunning = true;
 			    }
 			    mario.logic();
 			    if(!mario.isDead()){
                     myMusic.play("music/bgm.mp3",true);
+                    if(cannon!=null){
+                        cannon.logic();
+                    }
+                    if(enemies!=null){
+                        for (int i = 0; i < enemies.size(); i++) {
+                            enemies.get(i).logic();
+                        }
+                    }
+                    if(mario.getBullets()!=null){
+                        for (int i = 0; i < mario.getBullets().size(); i++) {
+                            mario.getBullets().get(i).logic();
+                        }
+                    }
+                    if(commonBricks!=null){
+                        for (int i = 0; i < commonBricks.size(); i++) {
+                            commonBricks.get(i).logic();
+                        }
+                    }
+                    if(bricks!=null){
+                        for (int i = 0; i < bricks.size(); i++) {
+                            Brick brick = bricks.get(i);
+                            brick.logic();
+                            MySprite item = brick.getItem();
+                            if(item!=null){
+                                if(item.isVisiable()){
+                                    item.logic();
+                                    //玛丽吃到道具(初始状态)
+                                    if(!mario.isDead()&&item.collisionWith(mario)){
+                                        //判断道具类型
+                                        //蘑菇
+                                        int status = mario.getStatus();
+                                        if(item instanceof Mushroom){
+                                            mySoundPool.play(mySoundPool.getMushroomSound());
+                                            if(status ==0){
+//                                        marioShapeShift(1);
+                                                mario.shapeShift(1);
+                                            }
+                                        }else if(item instanceof Flower){
+                                            //花
+                                            if(status !=2){
+                                                //非第三状态都执行
+//                                        marioShapeShift(2);
+                                                mario.shapeShift(2);
+                                                //设置弹夹
+                                                List<Bullet> bullets = new ArrayList<Bullet>();
+                                                for (int j = 0; j < 5; j++) {
+                                                    Bullet bullet = new Bullet(fireBallBitmap);
+                                                    if(mario.isMirror()){
+                                                        bullet.setDirection(Site.左);
+                                                    }else{
+                                                        bullet.setDirection(Site.右);
+                                                    }
+                                                    bullets.add(bullet);
+                                                }
+                                                mario.setBullets(bullets);
+                                            }
+                                        }else if(item instanceof Star){
+                                            //玛丽吃到无敌星后变成无敌状态
+                                            mario.setInvincible(true);
+                                            // TODO: 2017/12/1 加音效
+                                        }else if(item instanceof Coin){
+                                            coinNumber++;
+                                            mySoundPool.play(mySoundPool.getCoinSound());
+                                        }
+                                        //吃到后蘑菇消失
+                                        item.setVisiable(false);
+                                        updateScore(100);
+                                    }
+                                }
+                            }
+                        }
+                    }
 			    }else{
 				    if(!isMaioDieSoundPlayed){
 					    myMusic.stop();
@@ -378,70 +547,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 				    }
 			    	
 			    }
-			    if(enemies!=null){
-				    for (int i = 0; i < enemies.size(); i++) {
-					    enemies.get(i).logic();
-				    }
-			    }
-			    if(mario.getBullets()!=null){
-				    for (int i = 0; i < mario.getBullets().size(); i++) {
-					    mario.getBullets().get(i).logic();
-				    }
-			    }
-			    if(bricks!=null){
-				    for (int i = 0; i < bricks.size(); i++) {
-					    Brick brick = bricks.get(i);
-					    brick.logic();
-					    MySprite item = brick.getItem();
-					    if(item!=null){
-						    if(item.isVisiable()){
-							    item.logic();
-							    //玛丽吃到道具(初始状态)
-							    if(!mario.isDead()&&item.collisionWith(mario)){
-								    //判断道具类型
-								    //蘑菇
-								    int status = mario.getStatus();
-								    if(item instanceof Mushroom){
-								    	mySoundPool.play(mySoundPool.getMushroomSound());
-									    if(status ==0){
-//                                        marioShapeShift(1);
-										    mario.shapeShift(1);
-									    }
-								    }else if(item instanceof Flower){
-									    //花
-									    if(status !=2){
-										    //非第三状态都执行
-//                                        marioShapeShift(2);
-										    mario.shapeShift(2);
-										    //设置弹夹
-										    List<Bullet> bullets = new ArrayList<Bullet>();
-										    for (int j = 0; j < 5; j++) {
-											    Bullet bullet = new Bullet(fireBallBitmap);
-											    if(mario.isMirror()){
-												    bullet.setDirection(Site.左);
-											    }else{
-												    bullet.setDirection(Site.右);
-											    }
-											    bullets.add(bullet);
-										    }
-										    mario.setBullets(bullets);
-									    }
-								    }else if(item instanceof Star){
-									    //玛丽吃到无敌星后变成无敌状态
-									    mario.setInvincible(true);
-									    // TODO: 2017/12/1 加音效
-								    }else if(item instanceof Coin){
-									    coinNumber++;
-									    mySoundPool.play(mySoundPool.getCoinSound());
-								    }
-								    //吃到后蘑菇消失
-								    item.setVisiable(false);
-								    updateScore(100);
-							    }
-						    }
-					    }
-				    }
-			    }
+
 			    marioMove();
 			    myStep();
 			    collisionWithMap();
@@ -532,11 +638,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 	                            if(status !=0){
                                     switch (status){
 	                                    case  1:{
-//	                                    	marioShapeShift(0);
 		                                    mario.shapeShift(0);
 	                                    }break;
 	                                    case 2:{
-//	                                    	marioShapeShift(1);
 		                                    mario.shapeShift(1);
 	                                    }break;
                                     }
@@ -550,6 +654,41 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     }
                 }
 
+            }
+            if(cannon!=null&&cannon.getBullets()!=null){
+                for (int i = 0; i < cannon.getBullets().size(); i++) {
+                    EnemyBullet enemyBullet = cannon.getBullets().get(i);
+                    //大炮子弹碰到玛丽
+                    if(enemyBullet.isVisiable()&& mario.collisionWith(enemyBullet)){
+                        //玛丽无敌或踩到子弹
+                        if(mario.isInvincible()){
+                            enemyBullet.setVisiable(false);
+                            updateScore(200);
+                        }else if(mario.siteCollisionWith(enemyBullet,下)){
+                            speedY = -10;
+                            enemyBullet.setVisiable(false);
+                            updateScore(200);
+                        }else{
+                           if(!mario.isZeroDamage()){
+                               int status = mario.getStatus();
+                               if(status !=0){
+                                   switch (status){
+                                       case  1:{
+                                           mario.shapeShift(0);
+                                       }break;
+                                       case 2:{
+                                           mario.shapeShift(1);
+                                       }break;
+                                   }
+                                   mario.setZeroDamage(true);
+                               }else{
+                                   mario.setDead(true);
+                                   speedY = -16;
+                               }
+                           }
+                        }
+                    }
+                }
             }
         }
     }
@@ -576,7 +715,16 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 				enemy.setPosition(600+60*i, 328);
 				enemies.add(enemy);
 			}
-			isEnemyShown2 = true;
+            cannon = new Cannon(40, 80, cannonBitmaps);
+            cannon.setVisiable(true);
+            cannon.setPosition(720,280);
+            EnemyBullet enemyBullet = new EnemyBullet(enemyBulletBitmap);
+            enemyBullet.setDirection(左);
+            enemyBullet.setMirror(false);
+            List<EnemyBullet> bullets = new ArrayList<>();
+            bullets.add(enemyBullet);
+            cannon.setBullets(bullets);
+            isEnemyShown2 = true;
 
 		}
 		if(tiledLayer_peng01.getX() ==-1000 && !isEnemyShown3){
@@ -614,13 +762,17 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 	mario.move(4, 0);
                     //越过屏幕中点 地图移动
                 }else if(tiledLayer_peng01.getX()>800-tiledLayer_peng01.getCols()
-                		*tiledLayer_peng01.getWidth()){
+                        *tiledLayer_peng01.getWidth()){
                     tiledLayer_peng01.move(-4, 0);
+                    tiledLayer_cover.move(-4,0);
                     //到达地图边界 人物移动
                     if(enemies!=null){
                     	for (int i = 0; i < enemies.size(); i++) {
                     		enemies.get(i).move(-4, 0);
             			}
+                    }
+                    if(cannon!=null){
+                        cannon.move(-4,0);
                     }
                     if(bricks!=null){
                         for (int i = 0; i < bricks.size(); i++) {
@@ -631,6 +783,11 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 item.move(-4,0);
                             }
 
+                        }
+                    }
+                    if(commonBricks!=null){
+                        for (int i = 0; i < commonBricks.size(); i++) {
+                            commonBricks.get(i).move(-4,0);
                         }
                     }
                 }else{
@@ -658,8 +815,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     }
 
     private void init() {
-//	    threadRunning = false;
 	    isMaioDieSoundPlayed = false;
+        cannon = null;
         time = 300;
         thread = new Thread(new Runnable() {
             @Override
@@ -689,9 +846,11 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         Bitmap flowerBitmap = getBitmap("item/flower.png");
         Bitmap starBitmap = getBitmap("item/object_star.png");
         fireBallBitmap = getBitmap("item/object_fireball.png");
-		coinBitmap = getBitmap("coin/coin3.png");
+		coinBitmap = getBitmap("coin/coin4.png");
+        cannonBitmap = getBitmap("enemy/cannon.png");
+        enemyBulletBitmap = getBitmap("enemy/enemy_bullet.png");
 
-		marioSmallBitmaps = new ArrayList<Bitmap>();
+        marioSmallBitmaps = new ArrayList<Bitmap>();
         marioFireBitmaps = new ArrayList<Bitmap>();
         marioFireInvBitmaps = new ArrayList<Bitmap>();
         marioSmallInvBitmaps = new ArrayList<Bitmap>();
@@ -718,7 +877,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             coinBitmaps.add(getBitmap(String.format(Locale.CHINA,
                     "coin/coin%01d.png",i)));
         }
-	    
+        cannonBitmaps = new ArrayList<>();
+        cannonBitmaps.add(cannonBitmap);
         List<Bitmap> brickBitmaps = new ArrayList<Bitmap>();
         for (int i = 0; i < 5; i++) {
             brickBitmaps.add(getBitmap(String.format(Locale.CHINA, "brick/brick%02d.png", i)));
@@ -732,6 +892,16 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         };
         int[][] brickpostions2 = {
                 {2,6},{3,6},{4,6}
+
+        };
+
+        int[][] commonBrickPostions ={
+
+                {18,2},{20,2},{17,5},{19,5},{21,5},{37,5},
+                {44,5},{46,5},{48,5},
+                {54,2},{55,2},{56,2},{57,2},
+                {52,5},{53,5},{54,5},{55,5},{56,5},{57,5},{58,5},{59,5},{60,5},
+                {50,6},{51,6},{60,4},{52,4}
 
         };
         bricks = new ArrayList<Brick>();
@@ -761,6 +931,17 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         brick3.setVisiable(true);
         bricks.add(brick3);
 
+        commonBricks = new ArrayList<>();
+        List<Bitmap> commonbrickbitmaps = new ArrayList<>();
+        commonbrickbitmaps.add(getBitmap("brick/commonBrick.png"));
+
+        for (int[] position:commonBrickPostions){
+            CommonBrick commonBrick = new CommonBrick(40, 40, commonbrickbitmaps);
+            commonBrick.setVisiable(true);
+            commonBrick.setCanBroken(false);
+            commonBrick.setPosition(40*position[0],40*position[1]);
+            commonBricks.add(commonBrick);
+        }
 
 
         rectF = new RectF();
@@ -781,12 +962,15 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
         //碰撞层
         int map_peng01[][] =getMapArray();
+        int map_cover[][] = getMapCoverArray();
 
 
 
 		Bitmap mapBitmap = getBitmap("map/map1.png");
 		tiledLayer_peng01 = new TiledLayer(mapBitmap, 100, 12, 40, 40);
+		tiledLayer_cover = new TiledLayer(mapBitmap, 100, 12, 40, 40);
 		tiledLayer_peng01.setTiledCell(map_peng01);
+        tiledLayer_cover.setTiledCell(map_cover);
 
         isInited = true;
 		List<List<Bitmap>> bitmapsList = new ArrayList<List<Bitmap>>();
@@ -834,19 +1018,23 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 				            285-marioBitmap.getHeight(),mPaint);
 	            }break;
 	            case GAMING:{
+                    tiledLayer_cover.draw(lockCanvas);
 		            tiledLayer_peng01.draw(lockCanvas);
 		            if(enemies!=null){
 			            for (int i = 0; i < enemies.size(); i++) {
 				            enemies.get(i).draw(lockCanvas);
 			            }
 		            }
-		
+		            if(cannon!=null){
+                        cannon.draw(lockCanvas);
+                    }
 		            mario.draw(lockCanvas);
 		            lockCanvas.drawBitmap(aBitmap, 680, 420, null);
 		            lockCanvas.drawBitmap(bBitmap, 740, 360, null);
-		            lockCanvas.drawBitmap(downBitmap, 60, 420, null);
+//		            lockCanvas.drawBitmap(downBitmap, 60, 420, null);
 		            lockCanvas.drawBitmap(leftBitmap, 0, 360, null);
 		            lockCanvas.drawBitmap(rightBitmap, 120, 360, null);
+
 		            //绘制砖块
 		            if(bricks!=null){
 			            for (int i = 0; i < bricks.size(); i++) {
@@ -861,6 +1049,11 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 				            }
 			            }
 		            }
+                    if(commonBricks!=null){
+                        for (int i = 0; i < commonBricks.size(); i++) {
+                            commonBricks.get(i).draw(lockCanvas);
+                        }
+                    }
 		
 		            //绘制单次得分
 		            if(scoreString!=null){
@@ -897,6 +1090,44 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
      * 玛丽奥与砖块碰撞
      */
     private  void collisionWithBrick(){
+        if(commonBricks!=null){
+            for (int i = 0; i < commonBricks.size(); i++) {
+                CommonBrick commonBrick = commonBricks.get(i);
+                if(mario.siteCollisionWith(commonBrick, 下) && mario.isJumping()){
+                    mario.setJumping(false);
+                    //坐标修正
+                    //取得脚部坐标
+                    int footY = mario.getY() + mario.getHeight();
+                    //取整
+                    int newY = footY / tiledLayer_peng01.getHeight()
+                            * tiledLayer_peng01.getHeight()
+                            - mario.getHeight();
+                    mario.setPosition(mario.getX(),newY);
+                }
+                if(mario.siteCollisionWith(commonBrick,Site.上) && mario.isJumping()){
+                    speedY = Math.abs(speedY);
+//                    if(commonBrick.isHasItem()){
+                    if(!commonBrick.isJumping()){
+                        if(mario.getStatus()!=0){
+                            commonBrick.setCanBroken(true);
+                        }
+//                            mySoundPool.play(mySoundPool.getHitcommonBrickSound());
+                        commonBrick.setSpeedY(-4);
+                        commonBrick.setJumping(true);
+                    }
+//                    }
+
+                }
+                if(mario.siteCollisionWith(commonBrick,Site.左)){
+                    mario.move(4,0);
+                }
+                if(mario.siteCollisionWith(commonBrick,Site.右)){
+                    mario.move(-4,0);
+                }
+            }
+        }
+        
+        
         if(bricks!=null){
             for (int i = 0; i < bricks.size(); i++) {
                 Brick brick = bricks.get(i);
@@ -913,11 +1144,14 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 }
                 if(mario.siteCollisionWith(brick,Site.上) && mario.isJumping()){
                     speedY = Math.abs(speedY);
-                    if(!brick.isJumping()){
-                    	mySoundPool.play(mySoundPool.getHitbrickSound());
-                        brick.setSpeedY(-4);
-                        brick.setJumping(true);
-                    }
+					if(brick.isHasItem()){
+						if(!brick.isJumping()){
+							mySoundPool.play(mySoundPool.getHitbrickSound());
+							brick.setSpeedY(-4);
+							brick.setJumping(true);
+						}
+					}
+
                 }
                 if(mario.siteCollisionWith(brick,Site.左)){
                     mario.move(4,0);
@@ -926,6 +1160,26 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     mario.move(-4,0);
                 }
 
+            }
+        }
+        
+        if(cannon!=null){
+            if(mario.siteCollisionWith(cannon, 下) && mario.isJumping()){
+                mario.setJumping(false);
+                //坐标修正
+                //取得脚部坐标
+                int footY = mario.getY() + mario.getHeight();
+                //取整
+                int newY = footY / tiledLayer_peng01.getHeight()
+                        * tiledLayer_peng01.getHeight()
+                        - mario.getHeight();
+                mario.setPosition(mario.getX(),newY);
+            }
+            if(mario.siteCollisionWith(cannon,Site.左)){
+                mario.move(4,0);
+            }
+            if(mario.siteCollisionWith(cannon,Site.右)){
+                mario.move(-4,0);
             }
         }
     }

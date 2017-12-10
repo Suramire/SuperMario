@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.suramire.androidgame25.test">
+    package="com.suramire.androidgame25.test" >
 
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="19" />
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="26" />
+
+    <instrumentation
+        android:name="android.test.InstrumentationTestRunner"
+        android:functionalTest="false"
+        android:handleProfiling="false"
+        android:label="Tests for com.suramire.androidgame25"
+        android:targetPackage="com.suramire.androidgame25" />
 
     <application>
         <uses-library android:name="android.test.runner" />
     </application>
 
-    <instrumentation android:name="android.test.InstrumentationTestRunner"
-                     android:targetPackage="com.suramire.androidgame25"
-                     android:handleProfiling="false"
-                     android:functionalTest="false"
-                     android:label="Tests for com.suramire.androidgame25"/>
 </manifest>

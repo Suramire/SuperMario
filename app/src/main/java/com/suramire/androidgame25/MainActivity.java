@@ -1,14 +1,12 @@
 package com.suramire.androidgame25;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.suramire.androidgame25.util.L;
-
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private MyView2 view;
 

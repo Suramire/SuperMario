@@ -18,7 +18,7 @@ public class Enemy extends Sprite {
     private boolean isRunning;//是否跑动
     private boolean isJumping;//是否跳跃
     private boolean isDead;//是否死亡
-	private int delay;
+	protected int delay;
     private int speedY;
     //endregion
 
