@@ -24,7 +24,7 @@ public class EnemyBullet extends Bullet {
 
     @Override
     public void logic() {
-        if(isVisiable()){
+        if(ismVisiable()){
             switch (getDirection()){
                 //道具往左移动
                 case 左:{

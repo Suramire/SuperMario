@@ -18,7 +18,7 @@ import java.util.List;
 public class Brick extends Sprite {
     //表示道具类型 枚举
     protected ItemType itemType;
-    protected MySprite item;
+    protected ItemSprite itemSprite;
     //标志道具是否已显示
     protected boolean hasItem;
     //标志砖块是否是上下移动状态
@@ -42,12 +42,12 @@ public class Brick extends Sprite {
         this.hasItem = hasItem;
     }
 
-    public MySprite getItem() {
-        return item;
+    public ItemSprite getItemSprite() {
+        return itemSprite;
     }
 
-    public void setItem(Mushroom item) {
-        this.item = item;
+    public void setItemSprite(Mushroom itemSprite) {
+        this.itemSprite = itemSprite;
     }
 
     public boolean isJumping() {
@@ -75,8 +75,8 @@ public class Brick extends Sprite {
     public void logic() {
         if(isJumping()){
             if(hasItem){
-                item.setVisiable(true);
-                item.setPosition(getX(),getY()-getHeight());
+                itemSprite.setmVisiable(true);
+                itemSprite.setPosition(getX(),getY()-getHeight());
                 hasItem = false;
             }
             move(0,speedY++);
@@ -85,7 +85,7 @@ public class Brick extends Sprite {
             }
         }
         if(!hasItem){
-            setmFrameSequenceIndex(4);
+            setFrameSequenceIndex(4);
         }
     }
 
@@ -100,20 +100,20 @@ public class Brick extends Sprite {
             switch (type){
                 case Mushroom:{
                     //蘑菇默认往右移动
-                    item = new Mushroom(bitmap);
-                    this.item.setDirection(Site.上);
+                    itemSprite = new Mushroom(bitmap);
+                    this.itemSprite.setDirection(Site.上);
                 }break;
                 case Coin:{
 
                 }break;
                 case Flower:{
                     //花默认不移动
-                    item = new Flower(bitmap);
-                    this.item.setDirection(Site.上);
+                    itemSprite = new Flower(bitmap);
+                    this.itemSprite.setDirection(Site.上);
                 }break;
                 case Star:{
-                    item = new Star(bitmap);
-                    this.item.setDirection(Site.上);
+                    itemSprite = new Star(bitmap);
+                    this.itemSprite.setDirection(Site.上);
                 }break;
             }
 
@@ -132,8 +132,8 @@ public class Brick extends Sprite {
             switch (type){
 
                 case Coin:{
-                    item = new Coin(40,40,bitmaps);
-                    this.item.setDirection(Site.上);
+                    itemSprite = new Coin(40,40,bitmaps);
+                    this.itemSprite.setDirection(Site.上);
                 }break;
 
             }

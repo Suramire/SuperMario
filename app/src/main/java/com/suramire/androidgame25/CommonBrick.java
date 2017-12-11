@@ -30,7 +30,7 @@ public class CommonBrick extends Brick {
                 move(0,speedY++);
                 if(speedY>4){
                     setJumping(false);
-                    setVisiable(false);
+                    setmVisiable(false);
                 }
             }
 

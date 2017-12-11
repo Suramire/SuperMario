@@ -2,7 +2,7 @@ package com.suramire.androidgame25.item;
 
 import android.graphics.Bitmap;
 
-import com.suramire.androidgame25.MySprite;
+import com.suramire.androidgame25.ItemSprite;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Suramire on 2017/11/29.
  */
 
-public class Flower extends MySprite {
+public class Flower extends ItemSprite {
 
     public Flower(Bitmap bitmap) {
         super(bitmap);

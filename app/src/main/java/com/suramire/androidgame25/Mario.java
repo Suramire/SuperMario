@@ -205,7 +205,7 @@ public class Mario extends Sprite {
 	    for (int i = 0; i < temp.length; i++) {
 		    temp[i] = i;
 	    }
-	    setmFrameSequence(temp);
+	    setFrameSequence(temp);
 	    
 	    
 	    
@@ -237,17 +237,17 @@ public class Mario extends Sprite {
         
         if(isDead()){
         	
-            setmFrameSequenceIndex(3);
+            setFrameSequenceIndex(3);
         }else if(isJumping()){
-            setmFrameSequenceIndex(2);
+            setFrameSequenceIndex(2);
         }else if(isRunning()){
             nextFrame();
             //循环跑动贴图
-            if(getmFrameSequenceIndex()>=2){
-                setmFrameSequenceIndex(0);
+            if(getFrameSequenceIndex()>=2){
+                setFrameSequenceIndex(0);
             }
         }else{
-            setmFrameSequenceIndex(0);
+            setFrameSequenceIndex(0);
         }
     }
 
@@ -255,10 +255,10 @@ public class Mario extends Sprite {
         if(!isDead()&&getStatus()==2&&bullets!=null){
             for (int i = 0; i < bullets.size(); i++) {
                 Bullet bullet = bullets.get(i);
-                if(!bullet.isVisiable()&&delay++>10){
+                if(!bullet.ismVisiable()&&delay++>10){
                     bullet.setPosition(getX()+getWidth()/2,getY()+getHeight()/4);
                     bullet.setDirection(isMirror? Site.左:Site.右);
-                    bullet.setVisiable(true);
+                    bullet.setmVisiable(true);
                     bullet.setSpeedY(-4);
                     bullet.setJumping(true);
                     delay=0;
@@ -382,74 +382,5 @@ public class Mario extends Sprite {
         }
         return false;
     }
-
-
-    /**
-     * 玛丽与精灵碰撞检测
-     * @param sprite 被碰撞的精灵
-     * @param site 碰撞方位
-     * @return 是否碰撞
-     */
-
-    public boolean siteCollisionWith(Sprite sprite,Site site){
-        int sy = sprite.getY();
-        int sx = sprite.getX();
-        int sh = sprite.getHeight();
-        int sw = sprite.getWidth();
-        int w = getWidth();
-        int h = getHeight();
-        int x = getX();
-        int y = getY();
-
-        switch (site){
-            case 下:{
-
-                if(collisionWith(sprite)
-                        && sy > y
-                        && h >=sy-y
-                        && x+w/2>=sx
-                        && x+w/2 <=sx+sw
-                        ){
-                    return true;
-                }
-            }break;
-            case 上:{
-
-                if(collisionWith(sprite)
-                        && sy < y
-                        && sy + sh >= y //砖块高于玛丽最多一行高度
-                        && x + w /2>= sx//玛丽右1/2宽度可以顶砖块
-                        && x + w /2<= sx + sw//玛丽左1/2宽度可以顶砖块
-                        ){
-                    return true;
-                }
-            }break;
-
-            case 右:{
-                if(collisionWith(sprite)
-                        &&x+w==sx
-                        &&sy - y <h//只和同一行砖块左右碰撞
-                        ){
-                    return true;
-                }
-            }break;
-            case 左:{
-                if(collisionWith(sprite)
-                        &&sx+sw==x
-//                        &&y-sy<sh
-                        &&sy - y <h//只和同一行砖块左右碰撞
-                        ){
-                    return true;
-                }
-            }break;
-        }
-
-        return false;
-    }
-
-
-
-
-
 
 }
