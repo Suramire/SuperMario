@@ -23,35 +23,17 @@ public class EnemyBullet extends Bullet {
     }
 
     @Override
-    public void logic() {
-        if(ismVisiable()){
-            switch (getDirection()){
-                //道具往左移动
-                case 左:{
-                    move(-6,0);
-                }break;
-                //道具往右移动
-                case 右:{
-                    move(6,0);
-                }break;
-            }
-        }
-    }
-
-
-    @Override
     public void draw(Canvas canvas) {
         if (isMirror()) {
             canvas.save();
             //翻转画布 相当于翻转人物
             canvas.scale(-1, 1, getX() + getWidth() / 2, getY() + getHeight() / 2);
             super.draw(canvas);
-
             canvas.restore();
         } else {
-
             super.draw(canvas);
 
         }
     }
+
 }

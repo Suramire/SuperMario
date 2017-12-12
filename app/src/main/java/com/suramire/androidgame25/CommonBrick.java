@@ -27,17 +27,17 @@ public class CommonBrick extends Brick {
     public void logic() {
         if(isCanBroken()){
             if(isJumping()){
-                move(0,speedY++);
-                if(speedY>4){
+                move(0,mSpeedY++);
+                if(mSpeedY>4){
                     setJumping(false);
-                    setmVisiable(false);
+                    setVisiable(false);
                 }
             }
 
         }else{
             if(isJumping()){
-                move(0,speedY++);
-                if(speedY>4){
+                move(0,mSpeedY++);
+                if(mSpeedY>4){
                     setJumping(false);
                 }
             }

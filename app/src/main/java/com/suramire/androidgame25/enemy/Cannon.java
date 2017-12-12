@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 import com.suramire.androidgame25.EnemyBullet;
-import com.suramire.androidgame25.enums.Site;
+import com.suramire.androidgame25.Sprite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +15,14 @@ import java.util.List;
 
 public class Cannon extends Enemy {
 
-    private List<EnemyBullet> bullets;
+    private List<Sprite> bullets;
     private long delay2;
 
-    public List<EnemyBullet> getBullets() {
+    public List<Sprite> getBullets() {
         return bullets;
     }
 
-    public void setBullets(List<EnemyBullet> bullets) {
+    public void setBullets(List<Sprite> bullets) {
         this.bullets = bullets;
     }
 
@@ -33,9 +33,9 @@ public class Cannon extends Enemy {
 
     @Override
     public void logic() {
-        if(delay2++>30){
+        if(delay2++>50){
             fire();
-            delay=0;
+            delay2=0;
         }
         if(bullets!=null){
             for (int i = 0; i <bullets.size(); i++) {
@@ -47,10 +47,10 @@ public class Cannon extends Enemy {
     public void fire(){
         if(bullets!=null){
             for (int i = 0; i < bullets.size(); i++) {
-                EnemyBullet enemyBullet = bullets.get(i);
-                if(!enemyBullet.ismVisiable()){
-                    enemyBullet.setmVisiable(true);
-                    enemyBullet.setDirection(enemyBullet.isMirror()? Site.右:Site.左);
+                EnemyBullet enemyBullet = (EnemyBullet) bullets.get(i);
+                if(!enemyBullet.isVisiable()){
+                    enemyBullet.setVisiable(true);
+                    enemyBullet.setDead(false);
                     if(enemyBullet.isMirror()){
                         enemyBullet.setPosition(getX()+getWidth()-10,getY()+6);
                     }else{

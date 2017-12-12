@@ -1,26 +1,10 @@
 [
     {
-        "merged": "D:\\Users\\suramire\\Desktop\\SuperMario\\D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi\\mario.png",
-        "source": "D:\\Users\\suramire\\Desktop\\SuperMario\\D:\\Android\\SuperMario\\app\\src\\main\\res\\drawable-xxhdpi\\mario.png"
-    },
-    {
-        "merged": "D:\\Users\\suramire\\Desktop\\SuperMario\\D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi\\ic_launcher.png",
-        "source": "D:\\Users\\suramire\\Desktop\\SuperMario\\D:\\Android\\SuperMario\\app\\src\\main\\res\\drawable-xxhdpi\\ic_launcher.png"
-    },
-    {
         "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi\\mario.png",
         "source": "D:\\Android\\SuperMario\\app\\src\\main\\res\\drawable-xxhdpi\\mario.png"
     },
     {
-        "merged": "D:\\Users\\suramire\\Desktop\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi\\ic_launcher.png",
-        "source": "D:\\Users\\suramire\\Desktop\\SuperMario\\app\\src\\main\\res\\drawable-xxhdpi\\ic_launcher.png"
-    },
-    {
         "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi\\ic_launcher.png",
         "source": "D:\\Android\\SuperMario\\app\\src\\main\\res\\drawable-xxhdpi\\ic_launcher.png"
-    },
-    {
-        "merged": "D:\\Users\\suramire\\Desktop\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi\\mario.png",
-        "source": "D:\\Users\\suramire\\Desktop\\SuperMario\\app\\src\\main\\res\\drawable-xxhdpi\\mario.png"
     }
 ]

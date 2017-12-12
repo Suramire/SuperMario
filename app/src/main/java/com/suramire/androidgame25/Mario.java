@@ -5,8 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.SystemClock;
 
-import com.suramire.androidgame25.enums.Site;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +19,6 @@ public class Mario extends Sprite {
 	private final Thread invincibleThread;//无敌倒计时线程
 	private final Thread zeroDamagThread;//免伤倒计时线程
 	private final Paint paint;
-	private boolean isMirror;//是否翻转
-    private boolean isRunning;//是否跑动
-    private boolean isJumping;//是否跳跃
-    private boolean isDead;//是否死亡
     private int status ;//当前状态 0=初始化 1=吃蘑菇后 2=吃花后
     private boolean isInvincible;//标志是否无敌状态
     private boolean isZeroDamage;//标志是否处于免伤状态
@@ -32,7 +26,7 @@ public class Mario extends Sprite {
     private int zeroDamageTime;//免伤时间
 	private boolean isInvincibleThreadStarted;//标志进程是否开始
 	private boolean isZeroDamageThreadStarted;//标志进程是否开始
-    List<Bullet> bullets;
+    List<Sprite> bullets;
 	List<List<Bitmap>> bitmapsList;
 	
 
@@ -48,23 +42,7 @@ public class Mario extends Sprite {
 	public void setBitmapsList(List<List<Bitmap>> bitmapsList) {
 		this.bitmapsList = bitmapsList;
 	}
-	
-	public int getInvincibleTime() {
-		return invincibleTime;
-	}
-	
-	public void setInvincibleTime(int invincibleTime) {
-		this.invincibleTime = invincibleTime;
-	}
-	
-	public int getZeroDamageTime() {
-		return zeroDamageTime;
-	}
-	
-	public void setZeroDamageTime(int zeroDamageTime) {
-		this.zeroDamageTime = zeroDamageTime;
-	}
-	
+
 	public boolean isZeroDamage() {
 		return isZeroDamage;
 	}
@@ -89,44 +67,14 @@ public class Mario extends Sprite {
 		
 	}
 
-    public List<Bullet> getBullets() {
+    public List<Sprite> getBullets() {
         return bullets;
     }
 
-    public void setBullets(List<Bullet> bullets) {
+    public void setBullets(List<Sprite> bullets) {
         this.bullets = bullets;
     }
-    public boolean isMirror() {
-        return isMirror;
-    }
 
-    public void setMirror(boolean mirror) {
-        isMirror = mirror;
-    }
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    public void setRunning(boolean running) {
-        isRunning = running;
-    }
-
-    public boolean isJumping() {
-        return isJumping;
-    }
-
-    public void setJumping(boolean jumping) {
-        isJumping = jumping;
-    }
-
-    public boolean isDead() {
-        return isDead;
-    }
-
-    public void setDead(boolean dead) {
-        isDead = dead;
-    }
 	public int getStatus() {
 		return status;
 	}
@@ -134,7 +82,7 @@ public class Mario extends Sprite {
 	public void setStatus(int status) {
 		this.status = status;
 		if(status==2){
-			bullets = new ArrayList<Bullet>();
+			bullets = new ArrayList<Sprite>();
 		}
 	}
     //endregion
@@ -179,7 +127,7 @@ public class Mario extends Sprite {
     	if(isInvincible()){
     		value=3;
 	    }
-	    List<Bitmap> bitmaps = bitmapsList.get(targetStatus+value);
+	    List<Bitmap> bitmaps = getBitmapsList().get(targetStatus+value);
 	    Bitmap bitmap = bitmaps.get(0);
 	    int width = bitmap.getWidth();
 	    int height = bitmap.getHeight();
@@ -254,11 +202,11 @@ public class Mario extends Sprite {
     public void fire(){
         if(!isDead()&&getStatus()==2&&bullets!=null){
             for (int i = 0; i < bullets.size(); i++) {
-                Bullet bullet = bullets.get(i);
-                if(!bullet.ismVisiable()&&delay++>10){
+                Bullet bullet = (Bullet) bullets.get(i);
+                if(!bullet.isVisiable()&&delay++>10){
                     bullet.setPosition(getX()+getWidth()/2,getY()+getHeight()/4);
-                    bullet.setDirection(isMirror? Site.左:Site.右);
-                    bullet.setmVisiable(true);
+                    bullet.setMirror(!isMirror());
+                    bullet.setVisiable(true);
                     bullet.setSpeedY(-4);
                     bullet.setJumping(true);
                     delay=0;
@@ -304,83 +252,6 @@ public class Mario extends Sprite {
         }
     }
 
-    /**
-     * 碰撞检测
-     * @param tiledLayer
-     * @param site
-     * @return
-     */
-    public boolean siteCollisionWith(TiledLayer tiledLayer,Site site){
-        int siteX = 0;
-        int siteY = 0;
-        switch (site){
-            case 上左:{
-                siteX = getX() + getWidth() / 4;
-                siteY = getY();
-            }break;
-            case 上中:{
-                siteX = getX() + getWidth() / 2;
-                siteY = getY();
-            }break;
-            case 上右:{
-                siteX = getX() + 3 * getWidth() / 4;
-                siteY = getY();
-            }break;
 
-            case 下左:{
-                siteX = getX() + getWidth() / 4;
-                siteY = getY() + getHeight();
-            }break;
-            case 下中:{
-                siteX = getX() + getWidth() / 2;
-                siteY = getY() + getHeight();
-            }break;
-            case 下右:{
-                siteX = getX() + 3 * getWidth() / 4;
-                siteY = getY() + getHeight();
-            }break;
-
-            case 左上:{
-                siteX = getX();
-                siteY = getY() + getHeight() / 4;
-            }break;
-            case 左中:{
-                siteX = getX();
-                siteY = getY() + getHeight() / 2;
-            }break;
-            case 左下:{
-                siteX = getX();
-                siteY = getY() + 3 * getHeight() / 4;
-            }break;
-
-            case 右上:{
-                siteX = getX() + getWidth();
-                siteY = getY() + getHeight() / 4;
-            }break;
-            case 右中:{
-                siteX = getX() + getWidth();
-                siteY = getY() + getHeight() / 2;
-            }break;
-            case 右下:{
-                siteX = getX() + getWidth();
-                siteY = getY() + 3 * getHeight() / 4;
-            }break;
-        }
-        //在地图上的坐标
-        int mapX = siteX - tiledLayer.getX();
-        int mapY = siteY - tiledLayer.getY();
-        //在地图上的对应行列
-        int col = mapX / tiledLayer.getWidth();
-        int row = mapY / tiledLayer.getHeight();
-        //超出边界
-        if(col>tiledLayer.getCols()-1|| row>tiledLayer.getRows()-1){
-            return true;
-        }
-        //存在障碍物
-        if(tiledLayer.getTiledCell(col,row)!=0){
-            return true;
-        }
-        return false;
-    }
 
 }

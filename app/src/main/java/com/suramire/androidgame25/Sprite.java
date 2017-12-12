@@ -34,9 +34,56 @@ public class Sprite {
 	private int mFrameSequenceIndex;//帧序列的索引
     private Rect mDest;//目标剪切区
     private Rect mSrc;//源图片剪切区
+    public int mSpeedY;//y轴速度
+    private boolean isMirror;//是否翻转
+    private boolean isRunning;//是否跑动
+    private boolean isJumping;//是否跳跃
+    private boolean isDead;//是否死亡
 	//endregion
 
     //region Getter and Setter
+
+
+    public boolean isMirror() {
+        return isMirror;
+    }
+
+    public void setMirror(boolean mirror) {
+        isMirror = mirror;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
+    }
+
+    public boolean isJumping() {
+        return isJumping;
+    }
+
+    public void setJumping(boolean jumping) {
+        isJumping = jumping;
+    }
+
+    public boolean isDead() {
+        return isDead;
+    }
+
+    public void setDead(boolean dead) {
+        isDead = dead;
+    }
+
+    public int getSpeedY() {
+        return mSpeedY;
+    }
+
+    public void setSpeedY(int mSpeedY) {
+        this.mSpeedY = mSpeedY;
+    }
+
     public List<Bitmap> getBitmaps() {
 	    return mBitmaps;
     }
@@ -96,11 +143,11 @@ public class Sprite {
         mHeight = height;
     }
 
-    public boolean ismVisiable() {
+    public boolean isVisiable() {
         return mVisiable;
     }
 
-    public void setmVisiable(boolean mVisiable) {
+    public void setVisiable(boolean mVisiable) {
         this.mVisiable = mVisiable;
     }
 
@@ -176,7 +223,7 @@ public class Sprite {
      * @param paint 为了实现半透明效果需要的画笔对象
      */
     public void draw(Canvas canvas,Paint paint){
-	    if(ismVisiable()) {
+	    if(isVisiable()) {
 		    //采用切图方式
 		    if (mBitmap != null) {
 			    int x = mFrameX[mFrameSequence[mFrameSequenceIndex]];
@@ -213,7 +260,7 @@ public class Sprite {
      * @return 是否碰撞
      */
     public boolean collisionWith(Sprite sprite){
-        if (!ismVisiable() || !sprite.ismVisiable()) {
+        if (!isVisiable() || !sprite.isVisiable()) {
             return false;
         }
         if(getX()<sprite.getX()&& getX()+getWidth()<sprite.getX()){
@@ -234,6 +281,86 @@ public class Sprite {
     	}
     	return true;
     }
+
+    /**
+     * 精灵与地图碰撞检测
+     * @param tiledLayer
+     * @param site
+     * @return
+     */
+    public boolean siteCollisionWith(TiledLayer tiledLayer,Site site){
+        int siteX = 0;
+        int siteY = 0;
+        switch (site){
+            case 上左:{
+                siteX = getX() + getWidth() / 4;
+                siteY = getY();
+            }break;
+            case 上中:{
+                siteX = getX() + getWidth() / 2;
+                siteY = getY();
+            }break;
+            case 上右:{
+                siteX = getX() + 3 * getWidth() / 4;
+                siteY = getY();
+            }break;
+
+            case 下左:{
+                siteX = getX() + getWidth() / 4;
+                siteY = getY() + getHeight();
+            }break;
+            case 下中:{
+                siteX = getX() + getWidth() / 2;
+                siteY = getY() + getHeight();
+            }break;
+            case 下右:{
+                siteX = getX() + 3 * getWidth() / 4;
+                siteY = getY() + getHeight();
+            }break;
+
+            case 左上:{
+                siteX = getX();
+                siteY = getY() + getHeight() / 4;
+            }break;
+            case 左中:{
+                siteX = getX();
+                siteY = getY() + getHeight() / 2;
+            }break;
+            case 左下:{
+                siteX = getX();
+                siteY = getY() + 3 * getHeight() / 4;
+            }break;
+
+            case 右上:{
+                siteX = getX() + getWidth();
+                siteY = getY() + getHeight() / 4;
+            }break;
+            case 右中:{
+                siteX = getX() + getWidth();
+                siteY = getY() + getHeight() / 2;
+            }break;
+            case 右下:{
+                siteX = getX() + getWidth();
+                siteY = getY() + 3 * getHeight() / 4;
+            }break;
+        }
+        //在地图上的坐标
+        int mapX = siteX - tiledLayer.getX();
+        int mapY = siteY - tiledLayer.getY();
+        //在地图上的对应行列
+        int col = mapX / tiledLayer.getWidth();
+        int row = mapY / tiledLayer.getHeight();
+        //超出边界
+        if(col>tiledLayer.getCols()-1|| row>tiledLayer.getRows()-1){
+            return true;
+        }
+        //存在障碍物
+        if(tiledLayer.getTiledCell(col,row)!=0){
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * 精灵与精灵碰撞检测

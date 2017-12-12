@@ -3,7 +3,6 @@ package com.suramire.androidgame25;
 import android.graphics.Bitmap;
 
 import com.suramire.androidgame25.enums.ItemType;
-import com.suramire.androidgame25.enums.Site;
 import com.suramire.androidgame25.item.Coin;
 import com.suramire.androidgame25.item.Flower;
 import com.suramire.androidgame25.item.Mushroom;
@@ -15,16 +14,12 @@ import java.util.List;
  * 砖块类
  */
 
-public class Brick extends Sprite {
+public class Brick extends ItemSprite {
     //表示道具类型 枚举
     protected ItemType itemType;
     protected ItemSprite itemSprite;
     //标志道具是否已显示
-    protected boolean hasItem;
-    //标志砖块是否是上下移动状态
-    protected boolean isJumping;
-    //上下移动的速度
-    protected int speedY;
+    private boolean hasItem;
 
     //region Getter&Setter
     public ItemType getItemType() {
@@ -34,7 +29,7 @@ public class Brick extends Sprite {
     public void setItemType(ItemType itemType) {
         this.itemType = itemType;
     }
-    public boolean isHasItem() {
+    public boolean hasItem() {
         return hasItem;
     }
 
@@ -46,25 +41,10 @@ public class Brick extends Sprite {
         return itemSprite;
     }
 
-    public void setItemSprite(Mushroom itemSprite) {
+    public void setItemSprite(ItemSprite itemSprite) {
         this.itemSprite = itemSprite;
     }
 
-    public boolean isJumping() {
-        return isJumping;
-    }
-
-    public void setJumping(boolean jumping) {
-        isJumping = jumping;
-    }
-
-    public int getSpeedY() {
-        return speedY;
-    }
-
-    public void setSpeedY(int speedY) {
-        this.speedY = speedY;
-    }
     //endregion
 
     public Brick(int width, int height, List<Bitmap> bitmaps) {
@@ -75,12 +55,12 @@ public class Brick extends Sprite {
     public void logic() {
         if(isJumping()){
             if(hasItem){
-                itemSprite.setmVisiable(true);
+                itemSprite.setVisiable(true);
                 itemSprite.setPosition(getX(),getY()-getHeight());
                 hasItem = false;
             }
-            move(0,speedY++);
-            if(speedY>4){
+            move(0,mSpeedY++);
+            if(mSpeedY>4){
                 setJumping(false);
             }
         }
@@ -101,7 +81,7 @@ public class Brick extends Sprite {
                 case Mushroom:{
                     //蘑菇默认往右移动
                     itemSprite = new Mushroom(bitmap);
-                    this.itemSprite.setDirection(Site.上);
+                    itemSprite.setMirror(true);
                 }break;
                 case Coin:{
 
@@ -109,11 +89,11 @@ public class Brick extends Sprite {
                 case Flower:{
                     //花默认不移动
                     itemSprite = new Flower(bitmap);
-                    this.itemSprite.setDirection(Site.上);
+                    itemSprite.setRunning(false);
                 }break;
                 case Star:{
                     itemSprite = new Star(bitmap);
-                    this.itemSprite.setDirection(Site.上);
+                    itemSprite.setRunning(false);
                 }break;
             }
 
@@ -126,14 +106,14 @@ public class Brick extends Sprite {
      * @param e 是否添加标志位
      * @param bitmaps 道具图片（多帧方式）
      */
-    public void createItem(boolean e,List<Bitmap>  bitmaps,ItemType type){
+    public void createItem(boolean e,List<Bitmap> bitmaps,ItemType type){
         setItemType(type);
         if(e){
             switch (type){
 
                 case Coin:{
                     itemSprite = new Coin(40,40,bitmaps);
-                    this.itemSprite.setDirection(Site.上);
+                    itemSprite.setRunning(false);
                 }break;
 
             }

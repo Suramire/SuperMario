@@ -12,6 +12,7 @@ public class Turtle extends Enemy {
 
     private long delay2;
     private boolean canFly;
+    private long delay00;
 
     public boolean isCanFly() {
         return canFly;
@@ -30,9 +31,9 @@ public class Turtle extends Enemy {
         if (!isDead()) {
             if(delay++>1){
                 if(isJumping()){
-                    move(0,speedY++);
+                    move(0,mSpeedY++);
                 }
-                if (!isMirror) {
+                if (!isMirror()) {
                     move(-2, 0);
                 } else {
                     move(2, 0);
@@ -64,7 +65,11 @@ public class Turtle extends Enemy {
                 }
 
             }
-
+        }else{
+            if(delay00++>20){
+                setVisiable(false);
+                delay00=0;
+            }
         }
     }
 

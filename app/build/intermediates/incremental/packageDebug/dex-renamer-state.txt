@@ -1,4 +1,4 @@
-#Mon Dec 11 17:06:44 CST 2017
+#Tue Dec 12 21:44:29 CST 2017
 base.0=D\:\\Android\\SuperMario\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
 renamed.0=classes.dex
 file.0=D\:\\Android\\SuperMario\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex

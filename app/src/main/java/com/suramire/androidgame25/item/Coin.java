@@ -11,6 +11,7 @@ import java.util.List;
  */
 
 public class Coin extends ItemSprite {
+    private int delay;
     public Coin(int width, int height, List<Bitmap> bitmaps) {
         super(width, height, bitmaps);
         setFrameSequenceIndex(3);
@@ -18,8 +19,12 @@ public class Coin extends ItemSprite {
 
     @Override
     public void logic() {
-        if(ismVisiable()){
-            nextFrame();
+        if(isVisiable()){
+            if(delay++>1){
+                nextFrame();
+                delay=0;
+            }
+
         }
     }
 }

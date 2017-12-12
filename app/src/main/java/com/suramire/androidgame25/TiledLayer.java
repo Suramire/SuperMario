@@ -74,7 +74,6 @@ public class TiledLayer {
         mY = y;
     }
 
-
     public int getWidth() {
         return mWidth;
     }

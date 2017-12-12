@@ -12,12 +12,12 @@
         "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\design\\26.0.0-alpha1\\res\\layout\\design_bottom_sheet_dialog.xml"
     },
     {
-        "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\design_navigation_item_header.xml",
-        "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\design\\26.0.0-alpha1\\res\\layout\\design_navigation_item_header.xml"
-    },
-    {
         "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\design_layout_tab_icon.xml",
         "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\design\\26.0.0-alpha1\\res\\layout\\design_layout_tab_icon.xml"
+    },
+    {
+        "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\design_navigation_item_header.xml",
+        "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\design\\26.0.0-alpha1\\res\\layout\\design_navigation_item_header.xml"
     },
     {
         "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\select_dialog_singlechoice_material.xml",
@@ -48,20 +48,16 @@
         "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\26.0.0-alpha1\\res\\layout\\abc_action_bar_view_list_nav_layout.xml"
     },
     {
-        "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\design_text_input_password_icon.xml",
-        "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\design\\26.0.0-alpha1\\res\\layout\\design_text_input_password_icon.xml"
-    },
-    {
         "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\notification_template_media.xml",
         "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\26.0.0-alpha1\\res\\layout\\notification_template_media.xml"
     },
     {
-        "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_list_menu_item_icon.xml",
-        "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\26.0.0-alpha1\\res\\layout\\abc_list_menu_item_icon.xml"
+        "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\design_text_input_password_icon.xml",
+        "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\design\\26.0.0-alpha1\\res\\layout\\design_text_input_password_icon.xml"
     },
     {
-        "merged": "D:\\Users\\suramire\\Desktop\\SuperMario\\D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\activity_main.xml",
-        "source": "D:\\Users\\suramire\\Desktop\\SuperMario\\D:\\Android\\SuperMario\\app\\src\\main\\res\\layout\\activity_main.xml"
+        "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_list_menu_item_icon.xml",
+        "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\26.0.0-alpha1\\res\\layout\\abc_list_menu_item_icon.xml"
     },
     {
         "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_screen_content_include.xml",
@@ -146,10 +142,6 @@
     {
         "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\design_navigation_menu.xml",
         "source": "D:\\Android\\SuperMario\\app\\build\\intermediates\\exploded-aar\\com.android.support\\design\\26.0.0-alpha1\\res\\layout\\design_navigation_menu.xml"
-    },
-    {
-        "merged": "D:\\Users\\suramire\\Desktop\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\activity_main.xml",
-        "source": "D:\\Users\\suramire\\Desktop\\SuperMario\\app\\src\\main\\res\\layout\\activity_main.xml"
     },
     {
         "merged": "D:\\Android\\SuperMario\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_select_dialog_material.xml",

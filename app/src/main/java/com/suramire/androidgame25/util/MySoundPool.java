@@ -1,4 +1,4 @@
-package com.suramire.androidgame25;
+package com.suramire.androidgame25.util;
 
 import android.content.Context;
 import android.media.AudioManager;
