@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.SystemClock;
 
+import com.suramire.androidgame25.item.Bullet;
+
 import java.util.ArrayList;
 import java.util.List;
 

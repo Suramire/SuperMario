@@ -2,8 +2,6 @@ package com.suramire.androidgame25.item;
 
 import android.graphics.Bitmap;
 
-import com.suramire.androidgame25.ItemSprite;
-
 import java.util.List;
 
 /**

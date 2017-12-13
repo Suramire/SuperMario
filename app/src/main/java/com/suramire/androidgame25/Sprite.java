@@ -355,9 +355,12 @@ public class Sprite {
             return true;
         }
         //存在障碍物
-        if(tiledLayer.getTiledCell(col,row)!=0){
-            return true;
+        if(col>=0&&row>=0){
+            if(tiledLayer.getTiledCell(col,row)!=0){
+                return true;
+            }
         }
+
         return false;
     }
 

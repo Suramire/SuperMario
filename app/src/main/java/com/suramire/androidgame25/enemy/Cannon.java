@@ -3,14 +3,14 @@ package com.suramire.androidgame25.enemy;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-import com.suramire.androidgame25.EnemyBullet;
+import com.suramire.androidgame25.item.EnemyBullet;
 import com.suramire.androidgame25.Sprite;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Suramire on 2017/12/10.
+ * 敌人类-大炮
  */
 
 public class Cannon extends Enemy {
@@ -33,7 +33,7 @@ public class Cannon extends Enemy {
 
     @Override
     public void logic() {
-        if(delay2++>50){
+        if(delay2++>90){
             fire();
             delay2=0;
         }
@@ -52,9 +52,9 @@ public class Cannon extends Enemy {
                     enemyBullet.setVisiable(true);
                     enemyBullet.setDead(false);
                     if(enemyBullet.isMirror()){
-                        enemyBullet.setPosition(getX()+getWidth()-10,getY()+6);
+                        enemyBullet.setPosition(getX()+getWidth()-5,getY()+6);
                     }else{
-                        enemyBullet.setPosition(getX()-10,getY()+6);
+                        enemyBullet.setPosition(getX()-15,getY()+6);
                     }
 
                 }

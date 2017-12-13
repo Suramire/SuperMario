@@ -2,8 +2,6 @@ package com.suramire.androidgame25.item;
 
 import android.graphics.Bitmap;
 
-import com.suramire.androidgame25.ItemSprite;
-
 import java.util.List;
 
 /**
@@ -11,6 +9,8 @@ import java.util.List;
  */
 
 public class Star extends ItemSprite {
+
+
     public Star(Bitmap bitmap) {
         super(bitmap);
     }
@@ -18,4 +18,5 @@ public class Star extends ItemSprite {
     public Star(int width, int height, List<Bitmap> bitmaps) {
         super(width, height, bitmaps);
     }
+
 }
