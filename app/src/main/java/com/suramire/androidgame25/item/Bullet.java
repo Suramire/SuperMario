@@ -34,16 +34,16 @@ public class Bullet extends ItemSprite {
 
             if(isMirror()){
                 if(isJumping()){
-                    move(6,mSpeedY++);
+                    move(10,mSpeedY++);
                 }else{
-                    move(6,0);
+                    move(10,0);
 
                 }
             }else{
                 if(isJumping()){
-                    move(-6,mSpeedY++);
+                    move(-10,mSpeedY++);
                 }else{
-                    move(-6,0);
+                    move(-10,0);
                 }
             }
         }

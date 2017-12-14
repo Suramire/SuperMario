@@ -15,9 +15,14 @@ public class MySoundPool {
     private int hurryUpSound;
     private int hitEnemySound;
     private int jumpSound;
-	private int marioDieSound;
-	private int mushroomSound;
-	
+    private int cannotbreakSound;
+
+    public int getCannotbreakSound() {
+        return cannotbreakSound;
+    }
+
+    private int itemSound;
+
 	public int getHitEnemySound() {
 		return hitEnemySound;
 	}
@@ -39,20 +44,18 @@ public class MySoundPool {
 	}
 
 	
-	public int getMushroomSound() {
-		return mushroomSound;
+	public int getItemSound() {
+		return itemSound;
 	}
 	
-	public int getMarioDieSound() {
-		return marioDieSound;
-	}
+
 	
 	public MySoundPool(Context mContext) {
 		super();
 		this.mContext = mContext;
 		mSoundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-		marioDieSound = getSoundId("sounds/over.mp3");
-		mushroomSound = getSoundId("sounds/mushroom.mp3");
+        cannotbreakSound =getSoundId("sounds/cannotbreak.mp3");
+		itemSound = getSoundId("sounds/mushroom.mp3");
 		hitbrickSound = getSoundId("sounds/duang.mp3");
 		coinSound = getSoundId("sounds/coin.mp3");
 		hurryUpSound = getSoundId("sounds/hurryup.mp3");

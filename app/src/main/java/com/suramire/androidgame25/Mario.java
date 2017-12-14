@@ -186,7 +186,6 @@ public class Mario extends Sprite {
         
         
         if(isDead()){
-        	
             setFrameSequenceIndex(3);
         }else if(isJumping()){
             setFrameSequenceIndex(2);

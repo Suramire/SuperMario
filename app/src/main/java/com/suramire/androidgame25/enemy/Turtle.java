@@ -100,7 +100,7 @@ public class Turtle extends Enemy {
 
             }
         }else{
-            if(delay2++>20){
+            if(delay2++>10){
                 setVisiable(false);
                 delay2 =0;
             }
