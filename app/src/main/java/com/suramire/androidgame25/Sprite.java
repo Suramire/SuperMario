@@ -38,12 +38,22 @@ public class Sprite {
     private boolean isMirror;//是否翻转
     private boolean isRunning;//是否跑动
     private boolean isJumping;//是否跳跃
+
+
     private boolean isDead;//是否死亡
 	//endregion
 
     //region Getter and Setter
 
 
+
+    public int[] getmFrameSequence() {
+        return mFrameSequence;
+    }
+
+    public void setmFrameSequence(int[] mFrameSequence) {
+        this.mFrameSequence = mFrameSequence;
+    }
     public boolean isMirror() {
         return isMirror;
     }

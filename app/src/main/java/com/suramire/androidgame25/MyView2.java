@@ -121,6 +121,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private List<Sprite> cannons;
     private List<Sprite> turtles;
     private List<Sprite> items;
+    private boolean isEnemyShown4;
 
     public boolean isPause() {
         return isPause;
@@ -175,14 +176,15 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         switch (gameState) {
             case LOGO: {
-                if (stateDelay_logo > 100) {
+                if (stateDelay_logo > 50) {
                     init();
                     stateDelay_logo = 0;
+                    coinNumber = 0;
                 }
             }
             break;
             case FINISH: {
-                if (stateDelay_finish > 100) {
+                if (stateDelay_finish > 50) {
                     gameState = LOGO;
                     lifeNumber = 3;
                     stateDelay_finish = 0;
@@ -190,7 +192,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             }
             break;
             case GAMEOVER: {
-                if (stateDelay_gameover > 100) {
+                if (stateDelay_gameover > 50) {
                     gameState = LOGO;
                     lifeNumber = 3;
                     stateDelay_gameover = 0;
@@ -329,14 +331,14 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                         0, 0, 0, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35,
                         0, 0, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40,
@@ -344,21 +346,21 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0 },
                 { 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-                        26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+                        26, 26, 26, 26, 26, 0, 0, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26 },
                 { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                        30, 30, 30, 30, 30, 0, 0, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30 },
                 { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                        30, 30, 30, 30, 30, 0, 0, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
@@ -369,90 +371,90 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
     private int[][] getMapCoverArray() {
         return new int[][]{
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 50, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 45, 50, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 45, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41,
                         42, 43, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 9, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46,
                         47, 48, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17,
                         18, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 12, 13, 14, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51,
                         52, 53, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0}
+                        0, 0, 0, 0 }
         };
     }
 
@@ -587,43 +589,34 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private void myStep() {
         if (tiledLayer_peng01.getX() == 0 && !isEnemyShown1) {
             for (int i = 0; i < 3; i++) {
-//				Enemy enemy = new Enemy(32, 32, bitmaps2);
-//				enemy.setVisiable(true);
-//				enemy.setMirror(true);
-//				enemy.setPosition(200+60*i, 328);
-//				enemies.add(enemy);
-                Turtle turtle = new Turtle(20, 31, turtleBitmaps);
-                turtle.setVisiable(true);
-                turtle.setMirror(true);
-                turtle.setCanFly(true);
-                turtle.setPosition(150 + 50 * i, 229);
-                turtles.add(turtle);
+				Enemy enemy = new Chestunt(32, 32, bitmaps2);
+				enemy.setVisiable(true);
+				enemy.setPosition(200+60*i, 328);
+				enemies.add(enemy);
             }
-
             isEnemyShown1 = true;
         }
-        if (tiledLayer_peng01.getX() == -160 && !isEnemyShown2) {
-            enemies.clear();
+        if (tiledLayer_peng01.getX() == -480 && !isEnemyShown2) {
             for (int i = 0; i < 3; i++) {
                 Enemy enemy = new Chestunt(32, 32, bitmaps2);
                 enemy.setVisiable(true);
-                enemy.setPosition(600 + 60 * i, 328);
+                enemy.setPosition(720 + 60 * i, 328);
                 enemies.add(enemy);
-            }
-            Cannon cannon = new Cannon(40, 80, cannonBitmaps);
-            cannon.setVisiable(true);
-            cannon.setPosition(720, 280);
-            EnemyBullet enemyBullet = new EnemyBullet(enemyBulletBitmap);
-            enemyBullet.setMirror(false);
-            List<Sprite> bullets = new ArrayList<>();
-            bullets.add(enemyBullet);
-            cannon.setBullets(bullets);
-            cannons.add(cannon);
-            isEnemyShown2 = true;
 
+                Cannon cannon = new Cannon(40, 80, cannonBitmaps);
+                cannon.setVisiable(true);
+                cannon.setPosition(720+80*i, 200-40*i);
+                EnemyBullet enemyBullet = new EnemyBullet(enemyBulletBitmap);
+                enemyBullet.setMirror(false);
+                List<Sprite> bullets = new ArrayList<>();
+                bullets.add(enemyBullet);
+                cannon.setBullets(bullets);
+                cannons.add(cannon);
+            }
+
+            isEnemyShown2 = true;
         }
         if (tiledLayer_peng01.getX() == -1000 && !isEnemyShown3) {
-            enemies.clear();
             for (int i = 0; i < 3; i++) {
                 Enemy enemy = new Chestunt(32, 32, bitmaps2);
                 enemy.setVisiable(true);
@@ -632,6 +625,19 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             }
             isEnemyShown3 = true;
         }
+        if (tiledLayer_peng01.getX() == -2200 && !isEnemyShown4) {
+            for (int i = 0; i < 7; i++) {
+                Turtle turtle = new Turtle(30, 47, turtleBitmaps);
+                turtle.setVisiable(true);
+                turtle.setMirror(true);
+                turtle.setCanFly(true);
+                turtle.setPosition(360 + 40 * i, 240-40*i);
+                turtles.add(turtle);
+            }
+            isEnemyShown4 = true;
+        }
+
+
         if (tiledLayer_peng01.getX() == -2800) {
             gameState = FINISH;
         }
@@ -697,6 +703,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         isEnemyShown1 = false;
         isEnemyShown2 = false;
         isEnemyShown3 = false;
+        isEnemyShown4 = false;
 
         mPaint = new Paint();
         mPaint.setTextSize(20);//设置字号
@@ -724,14 +731,12 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         leftBitmap = getBitmap("button/left.png");
         rightBitmap = getBitmap("button/right.png");
         gameoverbitmap = getBitmap("menu/gameover.png");
-        marioBitmap = getBitmap("mario/mario0.png");
+        marioBitmap = getBitmap("mario/small/mario_01.png");
         logoBitmap = getBitmap("logo/logo.jpg");
         finishBitmap = getBitmap("logo/finish.jpg");
         Bitmap mushroomBitmap = getBitmap("item/mushroom.png");
-        Bitmap flowerBitmap = getBitmap("item/flower.png");
-        Bitmap starBitmap = getBitmap("item/object_star.png");
         fireBallBitmap = getBitmap("item/object_fireball.png");
-        coinBitmap = getBitmap("coin/coin4.png");
+        coinBitmap = getBitmap("coin/coin_00.png");
         Bitmap cannonBitmap = getBitmap("enemy/cannon.png");
         enemyBulletBitmap = getBitmap("enemy/enemy_bullet.png");
 
@@ -740,22 +745,23 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         List<Bitmap> marioSmallBitmaps = new ArrayList<>();
         ArrayList<Bitmap> marioFireInvBitmaps = new ArrayList<>();
         ArrayList<Bitmap> marioSmallInvBitmaps = new ArrayList<>();
-        ArrayList<Bitmap> marioInvBitmaps = new ArrayList<>();
+        ArrayList<Bitmap> marioBigInvincibleBitmaps = new ArrayList<>();
         commonBricks = new ArrayList<>();
         List<Bitmap> commonbrickbitmaps = new ArrayList<>();
         bricks = new ArrayList<>();
         items = new ArrayList<>();
-        List<Bitmap> marioBitmaps = new ArrayList<>();
+        List<Bitmap> marioBigBitmaps = new ArrayList<>();
         List<Bitmap> marioFireBitmaps = new ArrayList<>();
+        List<Bitmap> flowerBitmaps = new ArrayList<>();
         cannonBitmaps = new ArrayList<>();
         //设置数组型图片资源
-        for (int i = 0; i < 4; i++) {
-            marioBitmaps.add(getBitmap("mario/mario" + i + ".png"));
-            marioSmallBitmaps.add(getBitmap("mario/mario_small_" + i + ".png"));
-            marioFireBitmaps.add(getBitmap("mario/mario_fire_" + i + ".png"));
-            marioFireInvBitmaps.add(getBitmap("mario/mario_fire_invincible_" + i + ".png"));
-            marioSmallInvBitmaps.add(getBitmap("mario/mario_small_invincible_" + i + ".png"));
-            marioInvBitmaps.add(getBitmap("mario/mario_invincible_" + i + ".png"));
+        for (int i = 0; i < 7; i++) {
+            marioBigBitmaps.add(getBitmap("mario/big/mario_0"+i+".png"));
+            marioSmallBitmaps.add(getBitmap("mario/small/mario_0"+i+".png"));
+            marioFireBitmaps.add(getBitmap("mario/fire/mario_0"+i+".png"));
+            marioFireInvBitmaps.add(getBitmap("mario/fire/mario_inv_0"+i+".png"));
+            marioSmallInvBitmaps.add(getBitmap("mario/small/mario_inv_0"+i+".png"));
+            marioBigInvincibleBitmaps.add(getBitmap("mario/big/mario_inv_0"+i+".png"));
         }
         bitmaps2 = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
@@ -763,23 +769,32 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         }
         enemies = new ArrayList<>();
         List<Bitmap> coinBitmaps = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             coinBitmaps.add(getBitmap(String.format(Locale.CHINA,
-                    "coin/coin%01d.png", i)));
+                    "coin/coin_%02d.png", i)));
+        }
+        for (int i = 0; i < 4; i++) {
+            flowerBitmaps.add(getBitmap("item/flower/flower_0"+i+".png"));
         }
         cannonBitmaps.add(cannonBitmap);
         List<Bitmap> brickBitmaps = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            brickBitmaps.add(getBitmap(String.format(Locale.CHINA, "brick/brick%02d.png", i)));
+            brickBitmaps.add(getBitmap(String.format(Locale.CHINA, "brick/brick_%02d.png", i)));
         }
         turtleBitmaps = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             turtleBitmaps.add(getBitmap(String.format(Locale.CHINA, "turtle/turtle_%01d.png", i)));
         }
 
+        List<Bitmap> starBitmaps = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            starBitmaps.add(getBitmap(String.format(Locale.CHINA,"item/star/item_star_%02d.png",
+                    i)));
+        }
+
         //存放问号砖块行列坐标
         int[][] itemBrickPositions = {
-                {4,3},{4,6},{47,6}
+                {4,3},{4,6},{47,6},{15,6}
         };
 
         int[][] coinsPostions={
@@ -800,31 +815,39 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         }
 
         int[][] commonBrickPostions = {
-                {3,6},{5,6},{30,6},{32,5},{34,4},{36,3},{43,3},{36,4},{37,4},{38,4},{39,4},{40,4}
-                ,{41,4},{42,4},{43,4}
+                {3,6},{5,6},{30,7},{32,6},{34,5},{36,3},{43,3},{36,4},{37,4},{38,4},{39,4},{40,4}
+                ,{41,4},{42,4},{43,4},{14,6},{16,6},{21,6},{22,6},{50,6},{51,6},{52,6},{53,6},{54,6}
 
         };
 
         //创建砖块
         Brick brick = new Brick(40, 40, brickBitmaps);
         brick.setPosition(40 * itemBrickPositions[0][0], 40 * itemBrickPositions[0][1]);
-        brick.createItem(true, mushroomBitmap, ItemType.Mushroom);
+        brick.createItem(true, starBitmaps, ItemType.Star);
         items.add(brick.getItemSprite());
         brick.setVisiable(true);
         bricks.add(brick);
         Brick brick2 = new Brick(40, 40, brickBitmaps);
         brick2.setPosition(40 * itemBrickPositions[1][0], 40 * itemBrickPositions[1][1]);
-        brick2.createItem(true, flowerBitmap, ItemType.Flower);
+
+        brick2.createItem(true, mushroomBitmap, ItemType.Mushroom);
         items.add(brick2.getItemSprite());
         brick2.setVisiable(true);
         bricks.add(brick2);
 
         Brick brick3 = new Brick(40, 40, brickBitmaps);
         brick3.setPosition(40 * itemBrickPositions[2][0], 40 * itemBrickPositions[2][1]);
-        brick3.createItem(true, starBitmap, ItemType.Star);
+        brick3.createItem(true, starBitmaps, ItemType.Star);
         items.add(brick3.getItemSprite());
         brick3.setVisiable(true);
         bricks.add(brick3);
+
+        Brick brick4 = new Brick(40, 40, brickBitmaps);
+        brick4.setPosition(40 * itemBrickPositions[3][0], 40 * itemBrickPositions[3][1]);
+        brick4.createItem(true, flowerBitmaps, ItemType.Flower);
+        items.add(brick4.getItemSprite());
+        brick4.setVisiable(true);
+        bricks.add(brick4);
         
 
         commonbrickbitmaps.add(getBitmap("brick/commonBrick.png"));
@@ -840,15 +863,15 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
         rectF = new RectF();
         //初始化玛丽
-        mario = new Mario(20, 20, marioSmallBitmaps);
+        mario = new Mario(32, 32, marioSmallBitmaps);
         mario.setVisiable(true);
-        mario.setPosition(0, 342);
+        mario.setPosition(0, 330);
         List<List<Bitmap>> bitmapsList = new ArrayList<>();
         bitmapsList.add(marioSmallBitmaps);
-        bitmapsList.add(marioBitmaps);
+        bitmapsList.add(marioBigBitmaps);
         bitmapsList.add(marioFireBitmaps);
         bitmapsList.add(marioSmallInvBitmaps);
-        bitmapsList.add(marioInvBitmaps);
+        bitmapsList.add(marioBigInvincibleBitmaps);
         bitmapsList.add(marioFireInvBitmaps);
         mario.setBitmapsList(bitmapsList);
 
@@ -887,9 +910,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 }
                 break;
                 case GAMEOVER: {
+                    lockCanvas.drawColor(Color.BLACK);
                     lockCanvas.drawBitmap(gameoverbitmap,
                             400 - gameoverbitmap.getWidth() / 2,
-                            240 - gameoverbitmap.getHeight() / 2, null);
+                            250 - gameoverbitmap.getHeight() / 2, null);
                 }
                 break;
                 case FINISH: {
@@ -899,7 +923,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 case LIFTCOUNTER: {
                     lockCanvas.drawColor(Color.BLACK);
                     lockCanvas.drawBitmap(marioBitmap, 400 - marioBitmap.getWidth(),
-                            240 - marioBitmap.getHeight(), null);
+                            250 - marioBitmap.getHeight(), null);
                     lockCanvas.drawText(String.format(Locale.CHINA, "X %02d", lifeNumber),
                             440 - marioBitmap.getWidth(),
                             285 - marioBitmap.getHeight(), mPaint);
@@ -1048,45 +1072,70 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         if (mario.collisionWith(sprite)) {
             //与道具碰撞
             if(sprite instanceof ItemSprite){
-                int sound = mySoundPool.getItemSound();
-                int status = mario.getStatus();
-                if(sprite instanceof Mushroom){
-                    mySoundPool.play(mySoundPool.getItemSound());
-                    if (status == 0) {
-                        mario.shapeShift(1);
-                    }
-                }
-                if (sprite instanceof Flower) {
-                    //花
-                    if (status != 2) {
-                        //非第三状态都执行
-                        mario.shapeShift(2);
-                        //设置弹夹
-                        List<Sprite> bullets = new ArrayList<>();
-                        for (int j = 0; j < 5; j++) {
-                            Bullet bullet = new Bullet(fireBallBitmap);
-                            if (mario.isMirror()) {
-                                bullet.setMirror(false);
+                if(sprite instanceof EnemyBullet){
+                    if (mario.isInvincible()) {
+                        updateScore(100);
+                        sprite.setVisiable(false);
+                    } else if (mario.isJumping() && mario.siteCollisionWith(sprite,下)) {
+                            mySoundPool.play(mySoundPool.getHitEnemySound());
+                            //杀死敌人时获得100积分
+                            updateScore(100);
+                            mario.setSpeedY(-10);
+                            sprite.setVisiable(false);
+                    } else {
+                        if (!mario.isZeroDamage()&&sprite.isVisiable()) {
+                            int status = mario.getStatus();
+                            if (status != 0) {
+                                mario.shapeShift(status-1);
+                                mario.setZeroDamage(true);
                             } else {
-                                bullet.setMirror(true);
+                                mario.setDead(true);
+                                mario.setSpeedY(-16);
                             }
-                            bullets.add(bullet);
                         }
-                        mario.setBullets(bullets);
                     }
-                }
-                if (sprite instanceof Star) {
-                    //玛丽吃到无敌星后变成无敌状态
-                    mario.setInvincible(true);
-                }
-                if(sprite instanceof Coin) {
-                    coinNumber++;
-                    sound = mySoundPool.getCoinSound();
+                }else{
+                    int sound = mySoundPool.getItemSound();
+                    int status = mario.getStatus();
+                    if(sprite instanceof Mushroom){
+                        mySoundPool.play(mySoundPool.getItemSound());
+                        if (status == 0) {
+                            mario.shapeShift(1);
+                        }
+                    }
+                    if (sprite instanceof Flower) {
+                        //花
+                        if (status != 2) {
+                            //非第三状态都执行
+                            mario.shapeShift(2);
+                            //设置弹夹
+                            List<Sprite> bullets = new ArrayList<>();
+                            for (int j = 0; j < 5; j++) {
+                                Bullet bullet = new Bullet(fireBallBitmap);
+                                if (mario.isMirror()) {
+                                    bullet.setMirror(false);
+                                } else {
+                                    bullet.setMirror(true);
+                                }
+                                bullets.add(bullet);
+                            }
+                            mario.setBullets(bullets);
+                        }
+                    }
+                    if (sprite instanceof Star) {
+                        //玛丽吃到无敌星后变成无敌状态
+                        mario.setInvincible(true);
+                    }
+                    if(sprite instanceof Coin) {
+                        coinNumber++;
+                        sound = mySoundPool.getCoinSound();
+                    }
+                    mySoundPool.play(sound);
+                    sprite.setVisiable(false);
+                    updateScore(100);
                 }
 
-                mySoundPool.play(sound);
-                sprite.setVisiable(false);
-                updateScore(100);
+
 
             }else{
                 //与敌人碰撞
@@ -1100,10 +1149,13 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 ((Turtle) sprite).setZeroDamage(true);
                                 updateScore(100);
                                 mario.setSpeedY(-10);
+                                mario.setJumping(true);
                             } else {
                                 sprite.setDead(true);
                                 mySoundPool.play(mySoundPool.getHitEnemySound());
                                 updateScore(100);
+                                mario.setSpeedY(-10);
+                                mario.setJumping(true);
                             }
                         }
                     } else {
@@ -1322,17 +1374,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             if (sprite0.siteCollisionWith(sprite1, 下) && sprite0.isJumping()) {
                 //乌龟特殊处理
                 if (sprite0 instanceof Turtle) {
-                    if (((Turtle) sprite0).isCanFly()) {
-                        sprite0.setJumping(true);
-                        sprite0.setSpeedY(-10);
-                    } else {
-                        sprite0.setJumping(false);
-                        int footY = sprite0.getY() + sprite0.getHeight();
-                        int newY = footY / tiledLayer_peng01.getHeight()
-                                * tiledLayer_peng01.getHeight()
-                                - sprite0.getHeight();
-                        sprite0.setPosition(sprite0.getX(), newY);
-                    }
+                    sprite0.setJumping(true);
+                    sprite0.setSpeedY(-10);
                 }
                 //子弹与无敌星弹跳处理
                 if (sprite0 instanceof Bullet || sprite0 instanceof Star) {

@@ -16,6 +16,7 @@ public class Brick extends ItemSprite {
     protected ItemSprite itemSprite;
     //标志道具是否已显示
     private boolean hasItem;
+    private int delay;
 
     //region Getter&Setter
     public ItemType getItemType() {
@@ -62,6 +63,16 @@ public class Brick extends ItemSprite {
         }
         if(!hasItem){
             setFrameSequenceIndex(4);
+        }else{
+            if(delay++>10){
+                nextFrame();
+                if(getFrameSequenceIndex()>=4){
+                    setFrameSequenceIndex(0);
+                }
+                delay=0;
+
+            }
+
         }
     }
 
@@ -82,17 +93,7 @@ public class Brick extends ItemSprite {
                 case Coin:{
 
                 }break;
-                case Flower:{
-                    //花默认不移动
-                    itemSprite = new Flower(bitmap);
-                    itemSprite.setRunning(false);
-                }break;
-                case Star:{
-                    itemSprite = new Star(bitmap);
-                    itemSprite.setMirror(true);
-                    itemSprite.setJumping(true);
 
-                }break;
             }
 
             hasItem = true;
@@ -111,6 +112,18 @@ public class Brick extends ItemSprite {
 
                 case Coin:{
                     itemSprite = new Coin(40,40,bitmaps);
+                    itemSprite.setRunning(false);
+                }break;
+                case Star:{
+                    itemSprite = new Star(28,30,bitmaps);
+                    itemSprite.setRunning(true);
+                    itemSprite.setMirror(true);
+                }break;
+
+                case Flower:{
+                    //花默认不移动
+                    itemSprite = new Flower(32,32,bitmaps);
+                    itemSprite.setPosition(getX()+4,getY()-32);
                     itemSprite.setRunning(false);
                 }break;
 

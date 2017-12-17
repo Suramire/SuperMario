@@ -100,6 +100,7 @@ public class Turtle extends Enemy {
 
             }
         }else{
+            setFrameSequenceIndex(2);
             if(delay2++>10){
                 setVisiable(false);
                 delay2 =0;

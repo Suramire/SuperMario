@@ -124,7 +124,7 @@ public class Mario extends Sprite {
 	 * @param targetStatus 目标状态
 	 */
     public void shapeShift(int targetStatus){
-    	
+
 	    int value =0;
     	if(isInvincible()){
     		value=3;
@@ -138,9 +138,9 @@ public class Mario extends Sprite {
 		    //坐标修正
 		    int y;
 		    if(getWidth()>width){
-			    y =getY()+42;
+			    y =getY()+32;
 		    }else if(getWidth()<width){
-			    y =getY()-42;
+			    y =getY()-32;
 		    }else{
 			    y = getY();
 		    }
@@ -165,7 +165,7 @@ public class Mario extends Sprite {
     public void logic() {
         if(isInvincible()){
         	if(!isInvincibleThreadStarted){
-        		invincibleThread.start();
+        		new Thread(invincibleThread).start();
 		        isInvincibleThreadStarted = true;
 	        }
 	        if(invincibleTime<=0){
@@ -186,14 +186,17 @@ public class Mario extends Sprite {
         
         
         if(isDead()){
-            setFrameSequenceIndex(3);
+            setFrameSequenceIndex(6);
         }else if(isJumping()){
-            setFrameSequenceIndex(2);
+            nextFrame();
+            if(getFrameSequenceIndex()>=6){
+                setFrameSequenceIndex(3);
+            }
         }else if(isRunning()){
             nextFrame();
             //循环跑动贴图
-            if(getFrameSequenceIndex()>=2){
-                setFrameSequenceIndex(0);
+            if(getFrameSequenceIndex()>=3){
+                setFrameSequenceIndex(1);
             }
         }else{
             setFrameSequenceIndex(0);

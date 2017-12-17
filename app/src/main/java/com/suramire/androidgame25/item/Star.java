@@ -19,4 +19,11 @@ public class Star extends ItemSprite {
         super(width, height, bitmaps);
     }
 
+    @Override
+    public void logic() {
+        super.logic();
+        if(isVisiable()){
+            nextFrame();
+        }
+    }
 }
