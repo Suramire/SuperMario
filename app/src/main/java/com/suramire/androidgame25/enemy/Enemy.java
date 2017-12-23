@@ -15,6 +15,15 @@ public class Enemy extends Sprite {
 	protected int delay;
     protected int delay1;
     protected int delay2;
+    private boolean isOverturn;//是否反转
+
+    public boolean isOverturn() {
+        return isOverturn;
+    }
+
+    public void setOverturn(boolean overturn) {
+        isOverturn = overturn;
+    }
 
     public Enemy(int width, int height, List<Bitmap> bitmaps) {
         super(width, height, bitmaps);
@@ -25,11 +34,43 @@ public class Enemy extends Sprite {
         if(isMirror()){
             canvas.save();
             //翻转画布 相当于翻转人物
-            canvas.scale(-1,1,getX()+getWidth()/2,getY()+getHeight()/2);
+            if(isOverturn){
+                canvas.scale(-1,-1,getX()+getWidth()/2,getY()+getHeight()/2);
+            }else {
+                canvas.scale(-1,1,getX()+getWidth()/2,getY()+getHeight()/2);
+            }
             super.draw(canvas);
             canvas.restore();
         }else{
-            super.draw(canvas);
+
+            if(isOverturn){
+                canvas.save();
+                canvas.scale(1,-1,getX()+getWidth()/2,getY()+getHeight()/2);
+                super.draw(canvas);
+                canvas.restore();
+            }else{
+                super.draw(canvas);
+            }
+
+        }
+    }
+
+    @Override
+    public void logic() {
+        super.logic();
+        if(isDead()){
+            if(!isOverturn()){
+
+            }else{
+                //被子弹打到 反转下落
+                move(0, mSpeedY++);
+                if(isMirror()){
+                    move(1,0);
+                }else{
+                    move(-1,0);
+                }
+            }
+
         }
     }
 

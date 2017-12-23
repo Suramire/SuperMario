@@ -46,7 +46,6 @@ import static com.suramire.androidgame25.enums.GameState.GAMEOVER;
 import static com.suramire.androidgame25.enums.GameState.GAMING;
 import static com.suramire.androidgame25.enums.GameState.LIFTCOUNTER;
 import static com.suramire.androidgame25.enums.GameState.LOGO;
-import static com.suramire.androidgame25.enums.GameState.TIMEUP;
 import static com.suramire.androidgame25.enums.Site.上中;
 import static com.suramire.androidgame25.enums.Site.上右;
 import static com.suramire.androidgame25.enums.Site.上左;
@@ -85,7 +84,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private TiledLayer tiledLayer_peng01;
     private Bitmap gameoverbitmap;
     private List<Sprite> enemies;
-    private List<Bitmap> bitmaps2;
+    private List<Bitmap> chestuntBitmaps;
     private boolean isEnemyShown1;
     private boolean isEnemyShown2;
     private boolean isEnemyShown3;
@@ -122,6 +121,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private List<Sprite> turtles;
     private List<Sprite> items;
     private boolean isEnemyShown4;
+
 
     public boolean isPause() {
         return isPause;
@@ -522,15 +522,16 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             }
             break;
 
-            case TIMEUP: {
-                if (stateDelay_timeup++ > 100) {
-                    gameState = LIFTCOUNTER;
-                    stateDelay_timeup = 0;
-                }
-                lifeNumber--;
-                gameState = LIFTCOUNTER;
-            }
-            break;
+//            case TIMEUP: {
+//
+//                if (stateDelay_timeup++ > 100) {
+//                    gameState = LIFTCOUNTER;
+//                    stateDelay_timeup = 0;
+//                }
+////                lifeNumber--;
+////                gameState = LIFTCOUNTER;
+//            }
+//            break;
             case LIFTCOUNTER: {
 		    	myMusic.stop();
                 if (lifeNumber < 1) {
@@ -562,8 +563,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     }
 
     private void myTime() {
-        if (time < 0) {
-            gameState = TIMEUP;
+        if (time <= 0) {
+            mario.setDead(true);
         }
     }
 
@@ -589,36 +590,38 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private void myStep() {
         if (tiledLayer_peng01.getX() == 0 && !isEnemyShown1) {
             for (int i = 0; i < 3; i++) {
-				Enemy enemy = new Chestunt(32, 32, bitmaps2);
+				Enemy enemy = new Chestunt(32, 32, chestuntBitmaps);
 				enemy.setVisiable(true);
 				enemy.setPosition(200+60*i, 328);
 				enemies.add(enemy);
+
             }
             isEnemyShown1 = true;
+
         }
         if (tiledLayer_peng01.getX() == -480 && !isEnemyShown2) {
             for (int i = 0; i < 3; i++) {
-                Enemy enemy = new Chestunt(32, 32, bitmaps2);
+                Enemy enemy = new Chestunt(32, 32, chestuntBitmaps);
                 enemy.setVisiable(true);
                 enemy.setPosition(720 + 60 * i, 328);
                 enemies.add(enemy);
 
-                Cannon cannon = new Cannon(40, 80, cannonBitmaps);
-                cannon.setVisiable(true);
-                cannon.setPosition(720+80*i, 200-40*i);
-                EnemyBullet enemyBullet = new EnemyBullet(enemyBulletBitmap);
-                enemyBullet.setMirror(false);
-                List<Sprite> bullets = new ArrayList<>();
-                bullets.add(enemyBullet);
-                cannon.setBullets(bullets);
-                cannons.add(cannon);
+//                Cannon cannon = new Cannon(40, 80, cannonBitmaps);
+//                cannon.setVisiable(true);
+//                cannon.setPosition(720+80*i, 200-40*i);
+//                EnemyBullet enemyBullet = new EnemyBullet(enemyBulletBitmap);
+//                enemyBullet.setMirror(false);
+//                List<Sprite> bullets = new ArrayList<>();
+//                bullets.add(enemyBullet);
+//                cannon.setBullets(bullets);
+//                cannons.add(cannon);
             }
 
             isEnemyShown2 = true;
         }
         if (tiledLayer_peng01.getX() == -1000 && !isEnemyShown3) {
             for (int i = 0; i < 3; i++) {
-                Enemy enemy = new Chestunt(32, 32, bitmaps2);
+                Enemy enemy = new Chestunt(32, 32, chestuntBitmaps);
                 enemy.setVisiable(true);
                 enemy.setPosition(500 + 60 * i, 0);
                 enemies.add(enemy);
@@ -698,6 +701,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
     private void init() {
         isInited = false;
+        threadRunning = false;
         isMaioDieSoundPlayed = false;
         time = 300;
         isEnemyShown1 = false;
@@ -763,9 +767,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             marioSmallInvBitmaps.add(getBitmap("mario/small/mario_inv_0"+i+".png"));
             marioBigInvincibleBitmaps.add(getBitmap("mario/big/mario_inv_0"+i+".png"));
         }
-        bitmaps2 = new ArrayList<>();
+        chestuntBitmaps = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            bitmaps2.add(getBitmap("enemy/enemy" + i + ".png"));
+            chestuntBitmaps.add(getBitmap("enemy/chestunt/chestunt_0" + i + ".png"));
         }
         enemies = new ArrayList<>();
         List<Bitmap> coinBitmaps = new ArrayList<>();
@@ -783,7 +787,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         }
         turtleBitmaps = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
-            turtleBitmaps.add(getBitmap(String.format(Locale.CHINA, "turtle/turtle_%01d.png", i)));
+            turtleBitmaps.add(getBitmap(String.format(Locale.CHINA, "enemy/turtle/turtle_%01d.png", i)));
         }
 
         List<Bitmap> starBitmaps = new ArrayList<>();
@@ -820,10 +824,11 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
         };
 
+
         //创建砖块
         Brick brick = new Brick(40, 40, brickBitmaps);
         brick.setPosition(40 * itemBrickPositions[0][0], 40 * itemBrickPositions[0][1]);
-        brick.createItem(true, starBitmaps, ItemType.Star);
+        brick.createItem(true, flowerBitmaps, ItemType.Flower);
         items.add(brick.getItemSprite());
         brick.setVisiable(true);
         bricks.add(brick);
@@ -863,9 +868,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
         rectF = new RectF();
         //初始化玛丽
-        mario = new Mario(32, 32, marioSmallBitmaps);
-        mario.setVisiable(true);
-        mario.setPosition(0, 330);
+        this.mario = new Mario(32, 32, marioSmallBitmaps);
+        this.mario.setVisiable(true);
+        this.mario.setPosition(0, 330);
         List<List<Bitmap>> bitmapsList = new ArrayList<>();
         bitmapsList.add(marioSmallBitmaps);
         bitmapsList.add(marioBigBitmaps);
@@ -873,7 +878,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         bitmapsList.add(marioSmallInvBitmaps);
         bitmapsList.add(marioBigInvincibleBitmaps);
         bitmapsList.add(marioFireInvBitmaps);
-        mario.setBitmapsList(bitmapsList);
+        this.mario.setBitmapsList(bitmapsList);
 
 
 
@@ -1072,6 +1077,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         if (mario.collisionWith(sprite)) {
             //与道具碰撞
             if(sprite instanceof ItemSprite){
+                //与大炮子弹
                 if(sprite instanceof EnemyBullet){
                     if (mario.isInvincible()) {
                         updateScore(100);
@@ -1209,7 +1215,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             for (int i = 0; i < bullets.size(); i++) {
                 Sprite sprite1 = bullets.get(i);
                 //玛丽子弹不能消灭敌人子弹
-                if (sprite1.isVisiable() && sprite1.collisionWith(sprite) && !(sprite instanceof EnemyBullet)) {
+                if (sprite1.isVisiable() && sprite1.collisionWith(sprite) && !(sprite instanceof
+                        EnemyBullet)&&!sprite.isDead()) {
                     //乌龟在带翅膀状态被击中有免伤时间
                     if(sprite instanceof  Turtle){
                         if(!((Turtle) sprite).isZeroDamage()){
@@ -1219,14 +1226,31 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 updateScore(100);
                             } else {
                                 sprite.setDead(true);
+                                ((Turtle) sprite).setOverturn(true);
+                                if(sprite1.getX()>sprite.getX()){
+                                    sprite.setMirror(false);
+                                }else{
+                                    sprite.setMirror(true);
+                                }
+                                sprite.setSpeedY(-10);
                                 mySoundPool.play(mySoundPool.getHitEnemySound());
                                 updateScore(100);
                             }
                         }
+                        sprite1.setVisiable(false);
                     }
                     else{
+                        mySoundPool.play(mySoundPool.getHitEnemySound());
                         sprite1.setVisiable(false);
-                        sprite.setVisiable(false);
+//                        sprite.setVisiable(false);
+//                        sprite.setDead(true);
+                        ((Enemy) sprite).setOverturn(true);
+                        if(sprite1.getX()>sprite.getX()){
+                            sprite.setMirror(false);
+                        }else{
+                            sprite.setMirror(true);
+                        }
+                        sprite.setSpeedY(-10);
                         sprite.setDead(true);
                         updateScore(100);
                     }
@@ -1255,7 +1279,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
      * @param sprite 单个精灵
      */
     private void spriteCollisionMap(Sprite sprite) {
-        if (sprite.isVisiable()) {
+        if (sprite.isVisiable()&&!sprite.isDead()) {
             //头顶碰撞
             if (sprite.siteCollisionWith(tiledLayer_peng01, 上左) ||
                     sprite.siteCollisionWith(tiledLayer_peng01, 上中) ||
@@ -1370,7 +1394,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
      * @param sprite1 被碰精灵
      */
     private void sptiteCollisionSprite(Sprite sprite0, Sprite sprite1) {
-        if (sprite0.isVisiable() && sprite1.isVisiable()) {
+        if (sprite0.isVisiable()&& !sprite0.isDead() && sprite1.isVisiable()) {
             if (sprite0.siteCollisionWith(sprite1, 下) && sprite0.isJumping()) {
                 //乌龟特殊处理
                 if (sprite0 instanceof Turtle) {

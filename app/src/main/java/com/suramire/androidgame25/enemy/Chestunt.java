@@ -16,11 +16,9 @@ public class Chestunt extends Enemy {
 
     @Override
     public void logic() {
+        super.logic();
         if(isDead()){
-            if(delay++>25){
-                setVisiable(false);
-                delay=0;
-            }else{
+            if(!isOverturn()){
                 setFrameSequenceIndex(2);
             }
         }else if(isJumping()){
