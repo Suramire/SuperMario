@@ -33,6 +33,9 @@ public class Cannon extends Enemy {
 
     @Override
     public void logic() {
+        if(isJumping()){
+            move(0,mSpeedY++);
+        }
         if(delay2++>90){
             fire();
             delay2=0;

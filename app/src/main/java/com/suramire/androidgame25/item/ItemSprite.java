@@ -51,6 +51,4 @@ public class ItemSprite extends Sprite {
             setVisiable(false);
         }
     }
-
-
 }

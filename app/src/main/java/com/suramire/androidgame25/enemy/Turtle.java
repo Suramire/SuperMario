@@ -1,6 +1,7 @@
 package com.suramire.androidgame25.enemy;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.SystemClock;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class Turtle extends Enemy {
 
     public void setZeroDamage(boolean zeroDamage) {
         if(zeroDamage){
-            zeroDamageTime = 2;
+            zeroDamageTime = 1;
         }
         isZeroDamage = zeroDamage;
     }
@@ -54,6 +55,7 @@ public class Turtle extends Enemy {
     public void logic() {
         super.logic();
         if (!isDead()) {
+            //逻辑部分
             if(isZeroDamage){
                 if(!isZeroDamageThreadStarted){
                     new Thread(zeroDamagThread).start();
@@ -64,9 +66,9 @@ public class Turtle extends Enemy {
                     isZeroDamageThreadStarted = false;
                 }
             }
-
             if(delay++>1){
                 if(isJumping()){
+                    move(0,mSpeedY++);
                     move(0,mSpeedY++);
                 }
                 if (!isMirror()) {
@@ -74,9 +76,11 @@ public class Turtle extends Enemy {
                 } else {
                     move(2, 0);
                 }
-                delay = 0;
-            }
+                    delay = 0;
 
+
+            }
+            //贴图部分
             if(!isCanFly()){
                 if(delay1++>=7){
                     nextFrame();
@@ -96,13 +100,15 @@ public class Turtle extends Enemy {
                     if(getFrameSequenceIndex()<5){
                         setFrameSequenceIndex(5);
                     }
-
                 }
-
             }
         }else{
             setFrameSequenceIndex(2);
         }
     }
 
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+    }
 }

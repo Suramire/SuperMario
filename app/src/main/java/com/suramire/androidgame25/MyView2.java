@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
@@ -26,15 +27,16 @@ import com.suramire.androidgame25.enemy.Turtle;
 import com.suramire.androidgame25.enums.GameState;
 import com.suramire.androidgame25.enums.ItemType;
 import com.suramire.androidgame25.enums.Site;
-import com.suramire.androidgame25.item.Brick;
 import com.suramire.androidgame25.item.Bullet;
 import com.suramire.androidgame25.item.Coin;
-import com.suramire.androidgame25.item.CommonBrick;
 import com.suramire.androidgame25.item.EnemyBullet;
 import com.suramire.androidgame25.item.Flower;
 import com.suramire.androidgame25.item.ItemSprite;
 import com.suramire.androidgame25.item.Mushroom;
 import com.suramire.androidgame25.item.Star;
+import com.suramire.androidgame25.item.brick.Brick;
+import com.suramire.androidgame25.item.brick.Broken;
+import com.suramire.androidgame25.item.brick.CommonBrick;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,6 +65,7 @@ import static com.suramire.androidgame25.enums.Site.左中;
 
 
 public class MyView2 extends SurfaceView implements Callback, Runnable {
+    public static final String TAG = "superMario";
     private final MyMusic myMusic;
     private final MySoundPool mySoundPool;
     private final SharedPreferences sp;
@@ -76,7 +79,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private Context context;
     private Bitmap aBitmap;
     private Bitmap bBitmap;
-    private Bitmap downBitmap;
     private Bitmap leftBitmap;
     private Bitmap rightBitmap;
     private RectF rectF;
@@ -105,7 +107,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private Bitmap coinBitmap;
     private int coinNumber;
     private GameState gameState;//表示当前游戏状态
-    private int stateDelay_timeup;//状态切换间的延迟
     private int stateDelay_lifecounter;
     private int stateDelay_finish;
     private int stateDelay_logo;
@@ -121,7 +122,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     private List<Sprite> turtles;
     private List<Sprite> items;
     private boolean isEnemyShown4;
-
+    private boolean isEnemyShown5;
 
     public boolean isPause() {
         return isPause;
@@ -150,7 +151,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         mySoundPool = new MySoundPool(context);
     }
 
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         isRunning = true;
@@ -166,9 +166,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         isRunning = false;
         myMusic.stop();
         //游戏退出时记录最高分
-        Integer hiscore = sp.getInt("hiscore",0);
+        Integer hiscore = sp.getInt("hiscore", 0);
         if (hiscore < score) {
-            sp.edit().putInt("hiscore",score).apply();
+            sp.edit().putInt("hiscore", score).apply();
         }
     }
 
@@ -176,7 +176,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         switch (gameState) {
             case LOGO: {
-                if (stateDelay_logo > 50) {
+                if (stateDelay_logo > 40) {
                     init();
                     stateDelay_logo = 0;
                     coinNumber = 0;
@@ -184,7 +184,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             }
             break;
             case FINISH: {
-                if (stateDelay_finish > 50) {
+                if (stateDelay_finish > 40) {
                     gameState = LOGO;
                     lifeNumber = 3;
                     stateDelay_finish = 0;
@@ -192,7 +192,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             }
             break;
             case GAMEOVER: {
-                if (stateDelay_gameover > 50) {
+                if (stateDelay_gameover > 40) {
                     gameState = LOGO;
                     lifeNumber = 3;
                     stateDelay_gameover = 0;
@@ -260,7 +260,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     SystemClock.sleep(1000 / 30 - time);
                 }
             }
-
         }
     }
 
@@ -275,213 +274,246 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         try {
             bitmap = BitmapFactory.decodeStream(context.getAssets().open(fileName));
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "getBitmap is null !!!");
         }
         return bitmap;
     }
 
     private int[][] getMapArray() {
         return new int[][]{
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 27, 27, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 35,
                         0, 0, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 40,
                         0, 27, 27, 27, 27, 27, 27, 27, 27, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+                        0, 0, 0, 0},
+                {26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 0, 0, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
                         26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
-                        26, 26, 26, 26 },
-                { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                        26, 26, 26, 26},
+                {30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 0, 0, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30 },
-                { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+                        30, 30, 30, 30},
+                {30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 0, 0, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
                         30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-                        30, 30, 30, 30 }
+                        30, 30, 30, 30}
         };
     }
 
     private int[][] getMapCoverArray() {
         return new int[][]{
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 50, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 45, 50, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 45, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41,
                         42, 43, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 9, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46,
                         47, 48, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17,
                         18, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 12, 13, 14, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51,
                         52, 53, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0 }
+                        0, 0, 0, 0}
         };
     }
 
-    private void spritesMove(List<Sprite> sprites,int distenceX){
-        if(sprites!=null){
+    /**
+     * 通用的精灵移动方法
+     * @param sprites 目标精灵
+     * @param distenceX x轴移动距离
+     */
+    private void spritesMove(List<Sprite> sprites, int distenceX) {
+        if (sprites != null) {
             for (int i = 0; i < sprites.size(); i++) {
-                sprites.get(i).move(distenceX,0);
+                Sprite sprite = sprites.get(i);
+                sprite.move(distenceX, 0);
+                if (sprite instanceof CommonBrick) {
+                    Broken broken = ((CommonBrick) sprite).getBroken();
+                    if (broken != null && broken.isVisiable()) {
+                        broken.move(distenceX, 0);
+                    }
+                }
             }
         }
     }
 
-    private void spritesDraw(List<Sprite> sprites,Canvas canvas){
-        if(sprites!=null){
+    /**
+     * 通用精灵绘制方法
+     * @param sprites 目标精灵
+     * @param canvas 画布对象
+     */
+    private void spritesDraw(List<Sprite> sprites, Canvas canvas) {
+        if (sprites != null) {
             for (int i = 0; i < sprites.size(); i++) {
-                sprites.get(i).draw(canvas);
+                Sprite sprite = sprites.get(i);
+                sprite.draw(canvas);
+                //绘制普通砖块破碎效果
+                if (sprite instanceof CommonBrick) {
+                    Broken broken = ((CommonBrick) sprite).getBroken();
+                    if (broken != null && broken.isVisiable()) {
+                        broken.draw(canvas);
+                    }
+                }
             }
         }
     }
 
-    private void spritesLogic(List<Sprite> sprites){
-        if(sprites!=null){
+    private void spritesLogic(List<Sprite> sprites) {
+        if (sprites != null) {
             for (int i = 0; i < sprites.size(); i++) {
-                sprites.get(i).logic();
+                Sprite sprite = sprites.get(i);
+                sprite.logic();
+                //普通砖块破碎效果逻辑
+                if (sprite instanceof CommonBrick) {
+                    Broken broken = ((CommonBrick) sprite).getBroken();
+                    if (broken != null && broken.isVisiable()) {
+                        broken.logic();
+                    }
+                }
             }
+
         }
     }
-
 
 
     //endregion
@@ -495,12 +527,11 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 }
                 mario.logic();
                 if (!mario.isDead()) {
-                    if(mario.isInvincible()){
-                        myMusic.play("music/invincible.mp3",true);
-                    }else{
-                        myMusic.play("music/bgm.mp3",true);
+                    if (mario.isInvincible()) {
+                        myMusic.play("music/invincible.mp3", true);
+                    } else {
+                        myMusic.play("music/bgm.mp3", true);
                     }
-
                     spritesLogic(cannons);
                     spritesLogic(enemies);
                     spritesLogic(mario.getBullets());
@@ -510,7 +541,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     spritesLogic(bricks);
                 } else {
                     if (!isMaioDieSoundPlayed) {
-                        myMusic.play("music/over.mp3",false);
+                        myMusic.play("music/over.mp3", false);
                         isMaioDieSoundPlayed = true;
                     }
                 }
@@ -521,19 +552,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 myTime();
             }
             break;
-
-//            case TIMEUP: {
-//
-//                if (stateDelay_timeup++ > 100) {
-//                    gameState = LIFTCOUNTER;
-//                    stateDelay_timeup = 0;
-//                }
-////                lifeNumber--;
-////                gameState = LIFTCOUNTER;
-//            }
-//            break;
             case LIFTCOUNTER: {
-		    	myMusic.stop();
+                myMusic.stop();
                 if (lifeNumber < 1) {
                     gameState = GAMEOVER;
                 } else {
@@ -550,7 +570,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             }
             break;
             case FINISH: {
-                myMusic.play("music/finish.mp3",false);
+                myMusic.play("music/finish.mp3", false);
                 stateDelay_finish++;
             }
             break;
@@ -562,6 +582,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         }
     }
 
+    /**
+     * 超时处理
+     */
     private void myTime() {
         if (time <= 0) {
             mario.setDead(true);
@@ -585,15 +608,16 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
     }
 
-
-
+    /**
+     * 游戏进度控制
+     */
     private void myStep() {
         if (tiledLayer_peng01.getX() == 0 && !isEnemyShown1) {
             for (int i = 0; i < 3; i++) {
-				Enemy enemy = new Chestunt(32, 32, chestuntBitmaps);
-				enemy.setVisiable(true);
-				enemy.setPosition(200+60*i, 328);
-				enemies.add(enemy);
+                Enemy enemy = new Chestunt(32, 32, chestuntBitmaps);
+                enemy.setVisiable(true);
+                enemy.setPosition(200 + 60 * i, 328);
+                enemies.add(enemy);
 
             }
             isEnemyShown1 = true;
@@ -605,16 +629,17 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 enemy.setVisiable(true);
                 enemy.setPosition(720 + 60 * i, 328);
                 enemies.add(enemy);
-
-//                Cannon cannon = new Cannon(40, 80, cannonBitmaps);
-//                cannon.setVisiable(true);
-//                cannon.setPosition(720+80*i, 200-40*i);
-//                EnemyBullet enemyBullet = new EnemyBullet(enemyBulletBitmap);
-//                enemyBullet.setMirror(false);
-//                List<Sprite> bullets = new ArrayList<>();
-//                bullets.add(enemyBullet);
-//                cannon.setBullets(bullets);
-//                cannons.add(cannon);
+            }
+            for (int i = 0; i < 2; i++) {
+                Cannon cannon = new Cannon(40, 80, cannonBitmaps);
+                cannon.setVisiable(true);
+                cannon.setPosition(800 + 80 * i, 160 - 40 * i);
+                EnemyBullet enemyBullet = new EnemyBullet(enemyBulletBitmap);
+                enemyBullet.setMirror(false);
+                List<Sprite> bullets = new ArrayList<>();
+                bullets.add(enemyBullet);
+                cannon.setBullets(bullets);
+                cannons.add(cannon);
             }
 
             isEnemyShown2 = true;
@@ -628,16 +653,28 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             }
             isEnemyShown3 = true;
         }
-        if (tiledLayer_peng01.getX() == -2200 && !isEnemyShown4) {
+        if (tiledLayer_peng01.getX() == -1400 && !isEnemyShown4) {
+            Cannon cannon = new Cannon(40, 80, cannonBitmaps);
+            cannon.setVisiable(true);
+            cannon.setPosition(640, 160);
+            EnemyBullet enemyBullet = new EnemyBullet(enemyBulletBitmap);
+            enemyBullet.setMirror(false);
+            List<Sprite> bullets = new ArrayList<>();
+            bullets.add(enemyBullet);
+            cannon.setBullets(bullets);
+            cannons.add(cannon);
+            isEnemyShown4 = true;
+        }
+        if (tiledLayer_peng01.getX() == -2200 && !isEnemyShown5) {
             for (int i = 0; i < 7; i++) {
                 Turtle turtle = new Turtle(30, 47, turtleBitmaps);
                 turtle.setVisiable(true);
                 turtle.setMirror(true);
                 turtle.setCanFly(true);
-                turtle.setPosition(360 + 40 * i, 240-40*i);
+                turtle.setPosition(360 + 40 * i, 240 - 40 * i);
                 turtles.add(turtle);
             }
-            isEnemyShown4 = true;
+            isEnemyShown5 = true;
         }
 
 
@@ -669,12 +706,12 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     tiledLayer_peng01.move(-4, 0);
                     tiledLayer_cover.move(-4, 0);
                     //到达地图边界 人物移动
-                    spritesMove(enemies,-4);
-                    spritesMove(cannons,-4);
-                    spritesMove(turtles,-4);
-                    spritesMove(bricks,-4);
-                    spritesMove(commonBricks,-4);
-                    spritesMove(items,-4);
+                    spritesMove(enemies, -4);
+                    spritesMove(cannons, -4);
+                    spritesMove(turtles, -4);
+                    spritesMove(bricks, -4);
+                    spritesMove(commonBricks, -4);
+                    spritesMove(items, -4);
 
 
                 } else {
@@ -708,6 +745,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         isEnemyShown2 = false;
         isEnemyShown3 = false;
         isEnemyShown4 = false;
+        isEnemyShown5 = false;
 
         mPaint = new Paint();
         mPaint.setTextSize(20);//设置字号
@@ -731,16 +769,15 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         //加载图片资源
         aBitmap = getBitmap("button/a.png");
         bBitmap = getBitmap("button/b.png");
-        downBitmap = getBitmap("button/down.png");
         leftBitmap = getBitmap("button/left.png");
         rightBitmap = getBitmap("button/right.png");
-        gameoverbitmap = getBitmap("menu/gameover.png");
+        gameoverbitmap = getBitmap("logo/gameover.png");
         marioBitmap = getBitmap("mario/small/mario_01.png");
         logoBitmap = getBitmap("logo/logo.jpg");
         finishBitmap = getBitmap("logo/finish.jpg");
         Bitmap mushroomBitmap = getBitmap("item/mushroom.png");
         fireBallBitmap = getBitmap("item/object_fireball.png");
-        coinBitmap = getBitmap("coin/coin_00.png");
+        coinBitmap = getBitmap("item/coin/coin_00.png");
         Bitmap cannonBitmap = getBitmap("enemy/cannon.png");
         enemyBulletBitmap = getBitmap("enemy/enemy_bullet.png");
 
@@ -757,16 +794,23 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         List<Bitmap> marioBigBitmaps = new ArrayList<>();
         List<Bitmap> marioFireBitmaps = new ArrayList<>();
         List<Bitmap> flowerBitmaps = new ArrayList<>();
+        List<Bitmap> brokenBitmaps = new ArrayList<>();
         cannonBitmaps = new ArrayList<>();
         //设置数组型图片资源
         for (int i = 0; i < 7; i++) {
-            marioBigBitmaps.add(getBitmap("mario/big/mario_0"+i+".png"));
-            marioSmallBitmaps.add(getBitmap("mario/small/mario_0"+i+".png"));
-            marioFireBitmaps.add(getBitmap("mario/fire/mario_0"+i+".png"));
-            marioFireInvBitmaps.add(getBitmap("mario/fire/mario_inv_0"+i+".png"));
-            marioSmallInvBitmaps.add(getBitmap("mario/small/mario_inv_0"+i+".png"));
-            marioBigInvincibleBitmaps.add(getBitmap("mario/big/mario_inv_0"+i+".png"));
+            marioBigBitmaps.add(getBitmap("mario/big/mario_0" + i + ".png"));
+            marioSmallBitmaps.add(getBitmap("mario/small/mario_0" + i + ".png"));
+            marioFireBitmaps.add(getBitmap("mario/fire/mario_0" + i + ".png"));
+            marioFireInvBitmaps.add(getBitmap("mario/fire/mario_inv_0" + i + ".png"));
+            marioSmallInvBitmaps.add(getBitmap("mario/small/mario_inv_0" + i + ".png"));
+            marioBigInvincibleBitmaps.add(getBitmap("mario/big/mario_inv_0" + i + ".png"));
         }
+
+        for (int i = 0; i < 10; i++) {
+            brokenBitmaps.add(getBitmap(String.format(Locale.CHINA,
+                    "brick/broken/broken_%02d.png", i)));
+        }
+
         chestuntBitmaps = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             chestuntBitmaps.add(getBitmap("enemy/chestunt/chestunt_0" + i + ".png"));
@@ -775,10 +819,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         List<Bitmap> coinBitmaps = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             coinBitmaps.add(getBitmap(String.format(Locale.CHINA,
-                    "coin/coin_%02d.png", i)));
+                    "item/coin/coin_%02d.png", i)));
         }
         for (int i = 0; i < 4; i++) {
-            flowerBitmaps.add(getBitmap("item/flower/flower_0"+i+".png"));
+            flowerBitmaps.add(getBitmap("item/flower/flower_0" + i + ".png"));
         }
         cannonBitmaps.add(cannonBitmap);
         List<Bitmap> brickBitmaps = new ArrayList<>();
@@ -792,35 +836,36 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
         List<Bitmap> starBitmaps = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            starBitmaps.add(getBitmap(String.format(Locale.CHINA,"item/star/item_star_%02d.png",
+            starBitmaps.add(getBitmap(String.format(Locale.CHINA, "item/star/item_star_%02d.png",
                     i)));
         }
 
         //存放问号砖块行列坐标
         int[][] itemBrickPositions = {
-                {4,3},{4,6},{47,6},{15,6}
+                {4, 3}, {4, 6}, {47, 6}, {15, 6}
         };
-
-        int[][] coinsPostions={
-                {10,0},{10,1},{10,2},{10,3},{10,4},{11,2},{12,0},{12,1},{12,2},{12,3},{12,4},
-                {14,0},{14,1},{14,2},{14,3},{14,4},{15,0},{16,0},{15,2},{16,2},{15,4},{16,4},
-                {18,0},{18,1},{18,2},{18,3},{18,4},{19,4},{20,4},
-                {22,0},{22,1},{22,2},{22,3},{22,4},{23,4},{24,4},
-                {26,1},{26,2},{26,3},{28,1},{28,2},{28,3},{27,0},{27,4},
-                {36,1},{37,1},{38,1},{39,1},{40,1},{41,1},{42,1},{43,1}
+        //存放金币坐标
+        int[][] coinsPostions = {
+                {10, 0}, {10, 1}, {10, 2}, {10, 3}, {10, 4}, {11, 2}, {12, 0}, {12, 1}, {12, 2}, {12, 3}, {12, 4},
+                {14, 0}, {14, 1}, {14, 2}, {14, 3}, {14, 4}, {15, 0}, {16, 0}, {15, 2}, {16, 2}, {15, 4}, {16, 4},
+                {18, 0}, {18, 1}, {18, 2}, {18, 3}, {18, 4}, {19, 4}, {20, 4},
+                {22, 0}, {22, 1}, {22, 2}, {22, 3}, {22, 4}, {23, 4}, {24, 4},
+                {26, 1}, {26, 2}, {26, 3}, {28, 1}, {28, 2}, {28, 3}, {27, 0}, {27, 4},
+                {36, 1}, {37, 1}, {38, 1}, {39, 1}, {40, 1}, {41, 1}, {42, 1}, {43, 1}
 
         };
         //创建金币
-        for (int[] coinposition:coinsPostions){
+        for (int[] coinposition : coinsPostions) {
             Coin coin = new Coin(40, 40, coinBitmaps);
             coin.setVisiable(true);
-            coin.setPosition(coinposition[0]*40,coinposition[1]*40);
+            coin.setPosition(coinposition[0] * 40, coinposition[1] * 40);
             items.add(coin);
         }
-
+        //存放普通砖块坐标
         int[][] commonBrickPostions = {
-                {3,6},{5,6},{30,7},{32,6},{34,5},{36,3},{43,3},{36,4},{37,4},{38,4},{39,4},{40,4}
-                ,{41,4},{42,4},{43,4},{14,6},{16,6},{21,6},{22,6},{50,6},{51,6},{52,6},{53,6},{54,6}
+                {3, 6}, {5, 6},{29,7}, {30, 7}, {32, 6}, {34, 5}, {36, 3}, {43, 3}, {36, 4},
+                {37, 4}, {38, 4}, {39, 4}, {40, 4}, {41, 4}, {42, 4}, {43, 4}, {14, 6}, {16, 6},
+                {21, 6}, {22, 6}, {50, 6}, {51, 6}, {52, 6}, {53, 6}, {54, 6}
 
         };
 
@@ -853,13 +898,15 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         items.add(brick4.getItemSprite());
         brick4.setVisiable(true);
         bricks.add(brick4);
-        
+
 
         commonbrickbitmaps.add(getBitmap("brick/commonBrick.png"));
 
         for (int[] position : commonBrickPostions) {
             CommonBrick commonBrick = new CommonBrick(40, 40, commonbrickbitmaps);
             commonBrick.setVisiable(true);
+            Broken broken = new Broken(187, 187, brokenBitmaps);
+            commonBrick.setBroken(broken);
             commonBrick.setCanBroken(false);
             commonBrick.setPosition(40 * position[0], 40 * position[1]);
             commonBricks.add(commonBrick);
@@ -879,7 +926,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         bitmapsList.add(marioBigInvincibleBitmaps);
         bitmapsList.add(marioFireInvBitmaps);
         this.mario.setBitmapsList(bitmapsList);
-
 
 
         //初始化地图
@@ -946,7 +992,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     mario.draw(lockCanvas);
                     lockCanvas.drawBitmap(aBitmap, 680, 420, null);
                     lockCanvas.drawBitmap(bBitmap, 740, 360, null);
-//		            lockCanvas.drawBitmap(downBitmap, 60, 420, null);
                     lockCanvas.drawBitmap(leftBitmap, 0, 360, null);
                     lockCanvas.drawBitmap(rightBitmap, 120, 360, null);
 
@@ -997,6 +1042,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         sptitesCollisionSprites(items, bricks);
         //道具与普通砖块碰撞
         sptitesCollisionSprites(items, commonBricks);
+        //大炮与砖块碰撞
+        sptitesCollisionSprites(cannons, commonBricks);
+        sptitesCollisionSprites(cannons, commonBricks);
         //乌龟与砖块碰撞
         sptitesCollisionSprites(turtles, bricks);
         //乌龟与问号砖块
@@ -1039,6 +1087,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
         //敌人碰撞
         spritesCollisionMap(enemies);
         spritesCollisionMap(turtles);
+        spritesCollisionMap(cannons);
         //道具与地图碰撞
         spritesCollisionMap(items);
     }
@@ -1058,13 +1107,12 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
             for (int i = 0; i < sprites.size(); i++) {
                 Sprite sprite = sprites.get(i);
                 marioCollisionWith(sprite);
-                if(!(sprite instanceof ItemSprite)){
+                if (!(sprite instanceof ItemSprite)) {
                     marioBulletCollisionWithEnemy(sprite);
                 }
             }
         }
     }
-
 
 
     /**
@@ -1076,23 +1124,24 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
 
         if (mario.collisionWith(sprite)) {
             //与道具碰撞
-            if(sprite instanceof ItemSprite){
+            if (sprite instanceof ItemSprite) {
                 //与大炮子弹
-                if(sprite instanceof EnemyBullet){
+                if (sprite instanceof EnemyBullet) {
                     if (mario.isInvincible()) {
                         updateScore(100);
                         sprite.setVisiable(false);
-                    } else if (mario.isJumping() && mario.siteCollisionWith(sprite,下)) {
-                            mySoundPool.play(mySoundPool.getHitEnemySound());
-                            //杀死敌人时获得100积分
-                            updateScore(100);
-                            mario.setSpeedY(-10);
-                            sprite.setVisiable(false);
+                    } else if (mario.isJumping() && mario.siteCollisionWith(sprite, 下)&&
+                            !sprite.isDead()) {
+                        mySoundPool.play(mySoundPool.getHitEnemySound());
+                        //杀死敌人时获得100积分
+                        updateScore(100);
+                        mario.setSpeedY(-10);
+                        sprite.setVisiable(false);
                     } else {
-                        if (!mario.isZeroDamage()&&sprite.isVisiable()) {
+                        if (!mario.isZeroDamage() && sprite.isVisiable()) {
                             int status = mario.getStatus();
                             if (status != 0) {
-                                mario.shapeShift(status-1);
+                                mario.shapeShift(status - 1);
                                 mario.setZeroDamage(true);
                             } else {
                                 mario.setDead(true);
@@ -1100,10 +1149,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                             }
                         }
                     }
-                }else{
+                } else {
                     int sound = mySoundPool.getItemSound();
                     int status = mario.getStatus();
-                    if(sprite instanceof Mushroom){
+                    if (sprite instanceof Mushroom) {
                         mySoundPool.play(mySoundPool.getItemSound());
                         if (status == 0) {
                             mario.shapeShift(1);
@@ -1132,7 +1181,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                         //玛丽吃到无敌星后变成无敌状态
                         mario.setInvincible(true);
                     }
-                    if(sprite instanceof Coin) {
+                    if (sprite instanceof Coin) {
                         coinNumber++;
                         sound = mySoundPool.getCoinSound();
                     }
@@ -1142,14 +1191,13 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 }
 
 
-
-            }else{
+            } else {
                 //与敌人碰撞
-                if (mario.isInvincible()) {
+                if (mario.isInvincible()&& !sprite.isDead()) {
                     //如果乌龟带翅膀则切换状态
-                    if (sprite instanceof Turtle) {
+                    if (sprite instanceof Turtle ) {
                         //乌龟在带翅膀状态被击中有免伤时间
-                        if(!((Turtle) sprite).isZeroDamage()){
+                        if (!((Turtle) sprite).isZeroDamage()) {
                             if (((Turtle) sprite).isCanFly()) {
                                 ((Turtle) sprite).setCanFly(false);
                                 ((Turtle) sprite).setZeroDamage(true);
@@ -1157,6 +1205,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 mario.setSpeedY(-10);
                                 mario.setJumping(true);
                             } else {
+                                ((Enemy) sprite).setOverturn(true);
                                 sprite.setDead(true);
                                 mySoundPool.play(mySoundPool.getHitEnemySound());
                                 updateScore(100);
@@ -1165,6 +1214,8 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                             }
                         }
                     } else {
+                        ((Enemy) sprite).setOverturn(true);
+                        sprite.setSpeedY(-10);
                         sprite.setDead(true);
                         mySoundPool.play(mySoundPool.getHitEnemySound());
                         //杀死敌人时获得100积分
@@ -1173,7 +1224,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 } else if (mario.isJumping()) {
                     if (sprite instanceof Turtle) {
                         //乌龟在带翅膀状态被击中有免伤时间
-                        if(!((Turtle) sprite).isZeroDamage()){
+                        if (!((Turtle) sprite).isZeroDamage()) {
                             if (((Turtle) sprite).isCanFly()) {
                                 ((Turtle) sprite).setCanFly(false);
                                 ((Turtle) sprite).setZeroDamage(true);
@@ -1193,10 +1244,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                         mario.setSpeedY(-10);
                     }
                 } else {
-                    if (!mario.isZeroDamage()&&!sprite.isDead()) {
+                    if (!mario.isZeroDamage() && !sprite.isDead()) {
                         int status = mario.getStatus();
                         if (status != 0) {
-                            mario.shapeShift(status-1);
+                            mario.shapeShift(status - 1);
                             mario.setZeroDamage(true);
                         } else {
                             mario.setDead(true);
@@ -1216,10 +1267,10 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                 Sprite sprite1 = bullets.get(i);
                 //玛丽子弹不能消灭敌人子弹
                 if (sprite1.isVisiable() && sprite1.collisionWith(sprite) && !(sprite instanceof
-                        EnemyBullet)&&!sprite.isDead()) {
+                        EnemyBullet) && !sprite.isDead()) {
                     //乌龟在带翅膀状态被击中有免伤时间
-                    if(sprite instanceof  Turtle){
-                        if(!((Turtle) sprite).isZeroDamage()){
+                    if (sprite instanceof Turtle) {
+                        if (!((Turtle) sprite).isZeroDamage()) {
                             if (((Turtle) sprite).isCanFly()) {
                                 ((Turtle) sprite).setCanFly(false);
                                 ((Turtle) sprite).setZeroDamage(true);
@@ -1227,9 +1278,9 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                             } else {
                                 sprite.setDead(true);
                                 ((Turtle) sprite).setOverturn(true);
-                                if(sprite1.getX()>sprite.getX()){
+                                if (sprite1.getX() > sprite.getX()) {
                                     sprite.setMirror(false);
-                                }else{
+                                } else {
                                     sprite.setMirror(true);
                                 }
                                 sprite.setSpeedY(-10);
@@ -1238,16 +1289,15 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                             }
                         }
                         sprite1.setVisiable(false);
-                    }
-                    else{
+                    } else {
                         mySoundPool.play(mySoundPool.getHitEnemySound());
                         sprite1.setVisiable(false);
 //                        sprite.setVisiable(false);
 //                        sprite.setDead(true);
                         ((Enemy) sprite).setOverturn(true);
-                        if(sprite1.getX()>sprite.getX()){
+                        if (sprite1.getX() > sprite.getX()) {
                             sprite.setMirror(false);
-                        }else{
+                        } else {
                             sprite.setMirror(true);
                         }
                         sprite.setSpeedY(-10);
@@ -1279,7 +1329,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
      * @param sprite 单个精灵
      */
     private void spriteCollisionMap(Sprite sprite) {
-        if (sprite.isVisiable()&&!sprite.isDead()) {
+        if (sprite.isVisiable() && !sprite.isDead()) {
             //头顶碰撞
             if (sprite.siteCollisionWith(tiledLayer_peng01, 上左) ||
                     sprite.siteCollisionWith(tiledLayer_peng01, 上中) ||
@@ -1394,28 +1444,44 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
      * @param sprite1 被碰精灵
      */
     private void sptiteCollisionSprite(Sprite sprite0, Sprite sprite1) {
-        if (sprite0.isVisiable()&& !sprite0.isDead() && sprite1.isVisiable()) {
-            if (sprite0.siteCollisionWith(sprite1, 下) && sprite0.isJumping()) {
+        //精灵可见且非死亡状态
+        if (sprite0.isVisiable() && !sprite0.isDead() && sprite1.isVisiable() && !sprite1.isDead()) {
+            //0底部碰撞1
+            if (sprite0.siteCollisionWith(sprite1, 下)) {
                 //乌龟特殊处理
                 if (sprite0 instanceof Turtle) {
                     sprite0.setJumping(true);
                     sprite0.setSpeedY(-10);
-                }
-                //子弹与无敌星弹跳处理
-                if (sprite0 instanceof Bullet || sprite0 instanceof Star) {
-                    sprite0.setSpeedY(-10);
-                    sprite0.setJumping(true);
-                } else {
-                    sprite0.setJumping(false);
-                    //坐标修正
-                    //取得脚部坐标
-                    int footY = sprite0.getY() + sprite0.getHeight();
-                    //取整
-                    int newY = footY / tiledLayer_peng01.getHeight()
-                            * tiledLayer_peng01.getHeight()
-                            - sprite0.getHeight();
-                    sprite0.setPosition(sprite0.getX(), newY);
-                }
+                } else
+                    //砖块上方有敌人 砖块被顶起
+                    if (sprite0 instanceof Enemy && !(sprite0 instanceof Cannon) && sprite1 instanceof
+                            Brick && sprite1.isJumping()) {
+                        ((Enemy) sprite0).setOverturn(true);
+                        sprite0.setSpeedY(-10);
+                        sprite0.setDead(true);
+                        updateScore(100);
+                    } else
+                        //砖块上方有道具 砖块被顶起
+                        if (sprite0 instanceof ItemSprite && sprite1 instanceof CommonBrick && sprite1.isJumping()) {
+                            sprite0.setSpeedY(-10);
+                            sprite0.setJumping(true);
+
+                        } else
+                            //子弹与无敌星弹跳处理
+                            if (sprite0 instanceof Bullet || sprite0 instanceof Star) {
+                                sprite0.setSpeedY(-10);
+                                sprite0.setJumping(true);
+                            } else {
+                                sprite0.setJumping(false);
+                                //坐标修正
+                                //取得脚部坐标
+                                int footY = sprite0.getY() + sprite0.getHeight();
+                                //取整
+                                int newY = footY / tiledLayer_peng01.getHeight()
+                                        * tiledLayer_peng01.getHeight()
+                                        - sprite0.getHeight();
+                                sprite0.setPosition(sprite0.getX(), newY);
+                            }
             }
             if (sprite0.siteCollisionWith(sprite1, Site.上)) {
                 //玛丽顶砖块
@@ -1428,7 +1494,7 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                                 sprite1.setSpeedY(-4);
                                 sprite1.setJumping(true);
                                 mySoundPool.play(mySoundPool.getHitbrickSound());
-                            }else{
+                            } else {
                                 sprite1.setSpeedY(-4);
                                 sprite1.setJumping(true);
                                 mySoundPool.play(mySoundPool.getCannotbreakSound());
@@ -1467,7 +1533,6 @@ public class MyView2 extends SurfaceView implements Callback, Runnable {
                     sprite0.move(-4, 0);
                 }
             }
-
         }
     }
 }
