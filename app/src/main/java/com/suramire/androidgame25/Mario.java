@@ -30,10 +30,17 @@ public class Mario extends Sprite {
 	private boolean isZeroDamageThreadStarted;//标志进程是否开始
     List<Sprite> bullets;
 	List<List<Bitmap>> bitmapsList;
-	
+	private int speedX;//移动速度
 
-	
-	private int delay;
+    public int getSpeedX() {
+        return speedX;
+    }
+
+    public void setSpeedX(int speedX) {
+        this.speedX = speedX;
+    }
+
+    private int delay;
 	//endregion
 
     //region Getter & Setter
@@ -68,6 +75,14 @@ public class Mario extends Sprite {
 		shapeShift();
 		
 	}
+
+    public int getInvincibleTime() {
+        return invincibleTime;
+    }
+
+    public int getZeroDamageTime() {
+        return zeroDamageTime;
+    }
 
     public List<Sprite> getBullets() {
         return bullets;
@@ -110,6 +125,7 @@ public class Mario extends Sprite {
 			
 		    }
 	    });
+//        speedXThread = new Thread()
 	    paint = new Paint();
 	    paint.setAlpha(128);
     }
@@ -118,13 +134,32 @@ public class Mario extends Sprite {
 	public void shapeShift(){
 		shapeShift(getStatus());
 	}
- 
+
+    /**
+     * 获取可用子弹数目
+     * @return
+     */
+	public int getUseableBulletCount(){
+        int i = 0;
+        if(bullets!=null){
+            for (int j = 0; j < bullets.size(); j++) {
+                if(!bullets.get(i).isVisiable()){
+                    i++;
+                }
+            }
+        }
+        return i;
+    }
+
+
 	/**
 	 * 状态变化(变身)
 	 * @param targetStatus 目标状态
 	 */
     public void shapeShift(int targetStatus){
-
+        if(targetStatus!=2){
+            bullets = null;
+        }
 	    int value =0;
     	if(isInvincible()){
     		value=3;

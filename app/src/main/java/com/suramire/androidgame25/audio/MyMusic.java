@@ -19,24 +19,24 @@ public class MyMusic {
 	}
 
     public void play(String fileName,boolean looping){
-        if(mFileName.equals(fileName)){
-            return;
-        }else{
-            try {
-                mediaPlayer.reset();
-                mFileName = fileName;
-                AssetFileDescriptor fd = mContext.getAssets().openFd(fileName);
-                mediaPlayer.setDataSource(fd.getFileDescriptor(),
-                        fd.getStartOffset(),
-                        fd.getLength());
-                mediaPlayer.setLooping(looping);
-                mediaPlayer.prepare();
-                mediaPlayer.start();
+            if(mFileName.equals(fileName)){
+                return;
+            }else{
+                try {
+                    mediaPlayer.reset();
+                    mFileName = fileName;
+                    AssetFileDescriptor fd = mContext.getAssets().openFd(fileName);
+                    mediaPlayer.setDataSource(fd.getFileDescriptor(),
+                            fd.getStartOffset(),
+                            fd.getLength());
+                    mediaPlayer.setLooping(looping);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
 
-            } catch (IOException e) {
-                e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }
     }
 	public void stop(){
 		if(mediaPlayer.isPlaying()){
@@ -45,8 +45,14 @@ public class MyMusic {
 	}
 	
 	public void pause(){
-		if(mediaPlayer.isPlaying()){
-			mediaPlayer.pause();
-		}
-	}
+        try {
+            if(mediaPlayer.isPlaying()){
+                mediaPlayer.pause();
+            }
+        } catch (IllegalStateException e) {
+        }
+    }
+
+
+
 }

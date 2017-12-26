@@ -5,5 +5,5 @@ package com.suramire.androidgame25.enums;
  */
 
 public enum GameState {
-	LOGO,FINISH,LIFTCOUNTER,GAMING,GAMEOVER,TIMEUP
+	LOGO,FINISH,LIFTCOUNTER,GAMING,GAMEOVER,TIMEUP,TRANSFER
 }

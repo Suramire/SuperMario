@@ -81,6 +81,10 @@ public class Brick extends ItemSprite {
         }
     }
 
+    public Brick(Bitmap bitmap) {
+        super(bitmap);
+    }
+
     /**
      * 为砖块添加道具
      * @param e 是否添加标志位

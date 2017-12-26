@@ -3,8 +3,9 @@ package com.suramire.androidgame25.enemy;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-import com.suramire.androidgame25.item.EnemyBullet;
 import com.suramire.androidgame25.Sprite;
+import com.suramire.androidgame25.audio.MySoundPool;
+import com.suramire.androidgame25.item.EnemyBullet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class Cannon extends Enemy {
 
     private List<Sprite> bullets;
     private long delay2;
-
+    private  MySoundPool soundPool;
     public List<Sprite> getBullets() {
         return bullets;
     }
@@ -26,8 +27,9 @@ public class Cannon extends Enemy {
         this.bullets = bullets;
     }
 
-    public Cannon(int width, int height, List<Bitmap> bitmaps) {
+    public Cannon(int width, int height, List<Bitmap> bitmaps, MySoundPool soundPool) {
         super(width, height, bitmaps);
+        this.soundPool = soundPool;
         bullets = new ArrayList<>();
     }
 
@@ -52,6 +54,7 @@ public class Cannon extends Enemy {
             for (int i = 0; i < bullets.size(); i++) {
                 EnemyBullet enemyBullet = (EnemyBullet) bullets.get(i);
                 if(!enemyBullet.isVisiable()){
+                    soundPool.play(soundPool.getCannonSound());
                     enemyBullet.setVisiable(true);
                     enemyBullet.setDead(false);
                     if(enemyBullet.isMirror()){

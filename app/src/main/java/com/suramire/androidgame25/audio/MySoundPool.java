@@ -8,7 +8,8 @@ import android.util.Log;
 import java.io.IOException;
 
 public class MySoundPool {
-	private Context mContext;
+
+    private Context mContext;
 	private SoundPool mSoundPool;
     private int hitbrickSound;
     private int coinSound;
@@ -16,6 +17,26 @@ public class MySoundPool {
     private int hitEnemySound;
     private int jumpSound;
     private int cannotbreakSound;
+    private int hurtSound;
+    private int cannonSound;
+    private int transferSound;
+    private int brokenSound;
+
+    public int getBrokenSound() {
+        return brokenSound;
+    }
+
+    public int getTransferSound() {
+        return transferSound;
+    }
+
+    public int getCannonSound() {
+        return cannonSound;
+    }
+
+    public int getHurtSound() {
+        return hurtSound;
+    }
 
     public int getCannotbreakSound() {
         return cannotbreakSound;
@@ -61,9 +82,13 @@ public class MySoundPool {
 		hurryUpSound = getSoundId("sounds/hurryup.mp3");
 		jumpSound = getSoundId("sounds/jump.mp3");
 		hitEnemySound = getSoundId("sounds/hitenemy.mp3");
-		
-		
-	}
+        hurtSound = getSoundId("sounds/hurt.mp3");
+        cannonSound = getSoundId("sounds/cannon.mp3");
+        transferSound = getSoundId("sounds/transfer.mp3");
+        brokenSound = getSoundId("sounds/broken.mp3");
+
+
+    }
 	
 	public void play(int soundID){
 		mSoundPool.play(soundID, 1, 1, 1, 1, 1);

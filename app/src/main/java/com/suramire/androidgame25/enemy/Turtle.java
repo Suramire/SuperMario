@@ -17,6 +17,7 @@ public class Turtle extends Enemy {
     private boolean isZeroDamage;//标志是否处于免伤状态
     private int zeroDamageTime;//免伤时间
     private boolean isZeroDamageThreadStarted;//标志进程是否开始
+    private long delay2;
 
     public boolean isCanFly() {
         return canFly;
@@ -39,11 +40,12 @@ public class Turtle extends Enemy {
 
     public Turtle(int width, int height, List<Bitmap> bitmaps) {
         super(width, height, bitmaps);
+        delay1 =7;
         zeroDamagThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (zeroDamageTime >= 1) {
-                    SystemClock.sleep(1000);
+                    SystemClock.sleep(300);
                     zeroDamageTime--;
                 }
 
@@ -53,7 +55,7 @@ public class Turtle extends Enemy {
 
     @Override
     public void logic() {
-        super.logic();
+//        super.logic();
         if (!isDead()) {
             //逻辑部分
             if(isZeroDamage){
@@ -86,8 +88,8 @@ public class Turtle extends Enemy {
                     nextFrame();
                     delay1 =0;
                     //循环跑动贴图
-                    if(getFrameSequenceIndex()>=2){
-                        setFrameSequenceIndex(0);
+                    if(getFrameSequenceIndex()>3){
+                        setFrameSequenceIndex(2);
 
                     }
                 }
@@ -97,13 +99,34 @@ public class Turtle extends Enemy {
                     nextFrame();
                     delay1 =0;
                     //循环跑动贴图
-                    if(getFrameSequenceIndex()<5){
-                        setFrameSequenceIndex(5);
+                    if(getFrameSequenceIndex()>1){
+                        setFrameSequenceIndex(0);
                     }
                 }
             }
         }else{
-            setFrameSequenceIndex(2);
+            if(!isOverturn()){
+                if(isRunning()){
+                    if(isMirror()){
+                        move(10,0);
+                    }else{
+                        move(-10,0);
+                    }
+                }
+//                if(delay2++>10){
+//                    delay2 =0;
+////                    setVisiable(false);
+//                }
+            }else{
+                //被子弹打到 反转下落
+                move(0, mSpeedY++);
+                if(isMirror()){
+                    move(1,0);
+                }else{
+                    move(-1,0);
+                }
+            }
+            setFrameSequenceIndex(4);
         }
     }
 
