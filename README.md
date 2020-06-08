@@ -1,6 +1,7 @@
 # SuperMario
 安卓游戏期末项目-超级玛丽
 
+![效果图](https://github.com/Suramire/SuperMario/blob/master/WechatIMG1.png)
 
 ## 第一周
 * 任务：运行已编写的项目，修复Bug
