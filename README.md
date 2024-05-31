@@ -1,11 +1,7 @@
 # SuperMario
 安卓游戏期末项目-超级玛丽
 
-
-
--- push测试
-
-
+已适配Android Studio 2023.2
 
 ![效果图](https://github.com/Suramire/SuperMario/blob/master/WechatIMG1.png)
 
