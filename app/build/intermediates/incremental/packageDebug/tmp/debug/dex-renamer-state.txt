@@ -1,0 +1,4 @@
+#Fri May 31 23:28:48 CST 2024
+base.0=D\:\\WORKSTATION\\CODE\\Android\\SuperMario-master\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

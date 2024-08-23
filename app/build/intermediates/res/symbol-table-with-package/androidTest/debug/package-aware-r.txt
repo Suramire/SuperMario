@@ -1,0 +1,2 @@
+com.suramire.androidgame25.test
+string app_name
